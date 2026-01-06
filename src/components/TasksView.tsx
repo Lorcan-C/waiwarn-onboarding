@@ -38,6 +38,7 @@ interface TasksViewProps {
 }
 
 const TasksView = ({ column, onItemClick }: TasksViewProps) => {
+  const headerText = column === "right" ? "Today's onboarding tasks" : "Today's Tasks";
   const [priorityFilter, setPriorityFilter] = useState<"all" | Priority>("all");
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const [tasks, setTasks] = useState<LocalTask[]>(sampleTasks);
@@ -83,7 +84,7 @@ const TasksView = ({ column, onItemClick }: TasksViewProps) => {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">Today's Tasks</h2>
+        <h2 className="text-lg font-semibold text-gray-900">{headerText}</h2>
         
         {/* Filters */}
         <div className="flex gap-2">

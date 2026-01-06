@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, MessageSquare, Lightbulb } from "lucide-react";
+import { FileText, MessageSquare, Plus, GripVertical, Trash2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,7 +8,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import StageIndicator from "@/components/StageIndicator";
 
 import MeetingNotesDropzone from "@/components/MeetingNotesDropzone";
 import ExtractedTasksReview from "@/components/ExtractedTasksReview";
@@ -27,6 +26,17 @@ interface ItemDetail {
   workplan?: string;
   attendees?: string[];
   dateTime?: string;
+}
+
+interface PlanItem {
+  id: string;
+  text: string;
+}
+
+interface OutputDocument {
+  id: string;
+  name: string;
+  selected: boolean;
 }
 
 // Task data for lookup with full details
@@ -172,6 +182,15 @@ const meetingData: Record<string, ItemDetail> = {
   },
 };
 
+// Helper to parse workplan string into plan items
+const parseWorkplanToItems = (workplan?: string): PlanItem[] => {
+  if (!workplan) return [];
+  return workplan.split('\n').filter(line => line.trim()).map((line, index) => ({
+    id: `plan-${index}`,
+    text: line.replace(/^\d+\.\s*/, ''), // Remove leading numbers
+  }));
+};
+
 interface ProjectDetailViewProps {
   column: "left" | "right";
   onItemClick: (itemId: string, itemType: string) => void;
@@ -183,11 +202,13 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
   const [reviewDocOpen, setReviewDocOpen] = useState(false);
   const [brainstormOpen, setBrainstormOpen] = useState(false);
   const [isAddingTasks, setIsAddingTasks] = useState(false);
-  const [workplanReviewOpen, setWorkplanReviewOpen] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [titleValue, setTitleValue] = useState("");
   const [descriptionValue, setDescriptionValue] = useState("");
+  const [planItems, setPlanItems] = useState<PlanItem[]>([]);
+  const [outputDocs, setOutputDocs] = useState<OutputDocument[]>([]);
+  const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
   const { toast } = useToast();
   
   const { 
@@ -223,11 +244,13 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
       setTitleValue(itemData.title);
       const combinedDesc = `${itemData.description}${itemData.notes ? '\n\n' + itemData.notes : ''}`;
       setDescriptionValue(combinedDesc);
+      setPlanItems(parseWorkplanToItems(itemData.workplan));
+      setOutputDocs([]);
       setIsEditingTitle(false);
       setIsEditingDescription(false);
-      setWorkplanReviewOpen(false);
+      setEditingPlanId(null);
     }
-  }, [selectedItemId, itemData?.title, itemData?.description, itemData?.notes]);
+  }, [selectedItemId, itemData?.title, itemData?.description, itemData?.notes, itemData?.workplan]);
 
   if (!selectedItemId || !itemData) {
     return (
@@ -317,63 +340,72 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
     }
   };
 
-  const handleOpenDocReview = () => {
-    window.open("https://app.wavepitch.ai/app/review", "_blank");
+  // Plan item handlers
+  const handleAddPlanItem = () => {
+    const newItem: PlanItem = {
+      id: `plan-${Date.now()}`,
+      text: "",
+    };
+    setPlanItems([...planItems, newItem]);
+    setEditingPlanId(newItem.id);
   };
 
-  const handleGetAIFeedback = () => {
-    window.open("https://app.wavepitch.ai/app/review", "_blank");
+  const handleUpdatePlanItem = (id: string, text: string) => {
+    setPlanItems(planItems.map(item => item.id === id ? { ...item, text } : item));
   };
+
+  const handleDeletePlanItem = (id: string) => {
+    setPlanItems(planItems.filter(item => item.id !== id));
+  };
+
+  // Output document handlers
+  const handleAddDocument = () => {
+    const newDoc: OutputDocument = {
+      id: `doc-${Date.now()}`,
+      name: "New Document.docx",
+      selected: false,
+    };
+    setOutputDocs([...outputDocs, newDoc]);
+  };
+
+  const handleToggleDocSelection = (id: string) => {
+    setOutputDocs(outputDocs.map(doc => 
+      doc.id === id ? { ...doc, selected: !doc.selected } : doc
+    ));
+  };
+
+  const handleDeleteDocument = (id: string) => {
+    setOutputDocs(outputDocs.filter(doc => doc.id !== id));
+  };
+
+  const selectedDocsCount = outputDocs.filter(doc => doc.selected).length;
 
   return (
     <div className="space-y-6">
-      {/* Header with Inline Editable Title, Description, and Action Buttons */}
-      <div className="space-y-3">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            {/* Editable Title */}
-            {isEditingTitle ? (
-              <input
-                type="text"
-                value={titleValue}
-                onChange={(e) => setTitleValue(e.target.value)}
-                onBlur={() => setIsEditingTitle(false)}
-                onKeyDown={(e) => e.key === 'Enter' && setIsEditingTitle(false)}
-                autoFocus
-                className="text-xl font-semibold text-gray-900 w-full bg-white border border-blue-500 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            ) : (
-              <h2 
-                onClick={() => setIsEditingTitle(true)}
-                className="text-xl font-semibold text-gray-900 cursor-text hover:bg-gray-100 rounded px-2 py-1 -mx-2 transition-colors"
-              >
-                {titleValue}
-              </h2>
-            )}
-          </div>
-          <div className="flex gap-2 flex-shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setReviewDocOpen(true)}
-              className="text-xs"
-            >
-              <FileText className="w-3 h-3 mr-1" />
-              Review Doc
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setBrainstormOpen(true)}
-              className="text-xs"
-            >
-              <MessageSquare className="w-3 h-3 mr-1" />
-              Start Brainstorm
-            </Button>
-          </div>
-        </div>
-        
-        {/* Editable Description/Notes - Full Width */}
+      {/* 1. Header - Title Only */}
+      <div>
+        {isEditingTitle ? (
+          <input
+            type="text"
+            value={titleValue}
+            onChange={(e) => setTitleValue(e.target.value)}
+            onBlur={() => setIsEditingTitle(false)}
+            onKeyDown={(e) => e.key === 'Enter' && setIsEditingTitle(false)}
+            autoFocus
+            className="text-xl font-semibold text-gray-900 w-full bg-white border border-blue-500 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        ) : (
+          <h2 
+            onClick={() => setIsEditingTitle(true)}
+            className="text-xl font-semibold text-gray-900 cursor-text hover:bg-gray-100 rounded px-2 py-1 -mx-2 transition-colors"
+          >
+            {titleValue}
+          </h2>
+        )}
+      </div>
+
+      {/* 2. Description */}
+      <div>
         {isEditingDescription ? (
           <textarea
             value={descriptionValue}
@@ -393,66 +425,10 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
         )}
       </div>
 
-      {/* Stage Indicator - Only show for tasks */}
-      {!isMeeting && (
-        <StageIndicator 
-          stages={itemData.stages} 
-          currentStage={itemData.currentStage} 
-        />
-      )}
-
-      {/* Workplan - Only show for tasks */}
-      {!isMeeting && (
-        <div className="relative">
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-medium text-gray-700">Workplan</label>
-            <button 
-              onClick={() => setWorkplanReviewOpen(!workplanReviewOpen)}
-              className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 transition-colors"
-            >
-              Get feedback
-              <Lightbulb className="w-4 h-4" />
-            </button>
-          </div>
-          <textarea
-            className="w-full rounded-lg border border-gray-200 p-3 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            rows={4}
-            placeholder="Outline your approach and next steps..."
-            defaultValue={itemData.workplan}
-            key={`workplan-${selectedItemId}`}
-          />
-          
-          {/* AI Feedback Popup */}
-          {workplanReviewOpen && (
-            <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-start gap-3">
-                <Lightbulb className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-blue-800">AI Workplan Feedback</p>
-                  <p className="text-sm text-blue-700">
-                    Your workplan looks structured. Consider adding specific deadlines 
-                    and breaking down larger steps into smaller, actionable items.
-                  </p>
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="p-0 h-auto text-blue-600 hover:text-blue-800"
-                    onClick={() => setWorkplanReviewOpen(false)}
-                  >
-                    Dismiss
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-
-      {/* Stakeholders */}
+      {/* 3. Key Stakeholders */}
       <div>
-        <p className="text-sm font-medium text-gray-700 mb-3">Stakeholders</p>
-        <div className="space-y-2">
+        <p className="text-sm font-medium text-gray-700 mb-3">Key stakeholders</p>
+        <div className="space-y-2 mb-3">
           {itemData.stakeholders.length > 0 ? (
             itemData.stakeholders.map((stakeholder) => (
               <div
@@ -474,7 +450,129 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
             <p className="text-sm text-gray-400">No stakeholders assigned</p>
           )}
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setBrainstormOpen(true)}
+          className="text-xs"
+        >
+          <Users className="w-3 h-3 mr-1" />
+          Start virtual call with stakeholders
+        </Button>
       </div>
+
+      {/* 4. Plan Section - Only show for tasks */}
+      {!isMeeting && (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-medium text-gray-700">Plan</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.open("https://app.wavepitch.ai/app/review", "_blank")}
+              className="text-xs"
+            >
+              <FileText className="w-3 h-3 mr-1" />
+              Get feedback
+            </Button>
+          </div>
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <div className="divide-y divide-gray-100">
+              {planItems.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="flex items-center gap-2 p-3 bg-white hover:bg-gray-50 group"
+                >
+                  <GripVertical className="w-4 h-4 text-gray-300 cursor-grab flex-shrink-0" />
+                  <span className="text-sm text-gray-500 w-6">{index + 1}.</span>
+                  {editingPlanId === item.id ? (
+                    <input
+                      type="text"
+                      value={item.text}
+                      onChange={(e) => handleUpdatePlanItem(item.id, e.target.value)}
+                      onBlur={() => setEditingPlanId(null)}
+                      onKeyDown={(e) => e.key === 'Enter' && setEditingPlanId(null)}
+                      autoFocus
+                      className="flex-1 text-sm text-gray-700 bg-white border border-blue-500 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  ) : (
+                    <span 
+                      onClick={() => setEditingPlanId(item.id)}
+                      className="flex-1 text-sm text-gray-700 cursor-text hover:bg-gray-100 rounded px-1"
+                    >
+                      {item.text || 'Click to edit...'}
+                    </span>
+                  )}
+                  <button
+                    onClick={() => handleDeletePlanItem(item.id)}
+                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-opacity"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={handleAddPlanItem}
+              className="w-full flex items-center gap-2 p-3 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors border-t border-gray-100"
+            >
+              <Plus className="w-4 h-4" />
+              Add item
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 5. Outputs Section - Only show for tasks */}
+      {!isMeeting && (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-medium text-gray-700">Outputs</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setReviewDocOpen(true)}
+              disabled={selectedDocsCount === 0}
+              className="text-xs"
+            >
+              <FileText className="w-3 h-3 mr-1" />
+              Get virtual stakeholders to review document
+            </Button>
+          </div>
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <div className="divide-y divide-gray-100">
+              {outputDocs.map((doc) => (
+                <div
+                  key={doc.id}
+                  className="flex items-center gap-3 p-3 bg-white hover:bg-gray-50 group"
+                >
+                  <input
+                    type="checkbox"
+                    checked={doc.selected}
+                    onChange={() => handleToggleDocSelection(doc.id)}
+                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                  <span className="flex-1 text-sm text-gray-700">{doc.name}</span>
+                  <button
+                    onClick={() => handleDeleteDocument(doc.id)}
+                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-opacity"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={handleAddDocument}
+              className="w-full flex items-center gap-2 p-3 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors border-t border-gray-100"
+            >
+              <Plus className="w-4 h-4" />
+              Add document
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Meeting Notes Dropzone - Only show for meetings */}
       {isMeeting && (
@@ -508,7 +606,7 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FileText className="w-5 h-5 text-blue-600" />
-              Review Doc
+              Get virtual stakeholders to review document
             </DialogTitle>
             <DialogDescription>
               Get multiple views on your work via in-document comment threads.
@@ -516,27 +614,27 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
           </DialogHeader>
           <div className="py-4">
             <p className="text-sm text-gray-600">
-              This feature allows stakeholders to provide feedback directly within your document, 
+              This feature allows virtual stakeholders to provide feedback directly within your document, 
               creating threaded conversations around specific sections for clearer, more contextual reviews.
             </p>
           </div>
           <div className="flex justify-end">
             <Button asChild>
               <a href="https://app.wavepitch.ai/app/review" target="_blank" rel="noopener noreferrer">
-                Open Review
+                Start Review
               </a>
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Brainstorm Modal */}
+      {/* Virtual Call Modal */}
       <Dialog open={brainstormOpen} onOpenChange={setBrainstormOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-purple-600" />
-              Start Brainstorm
+              <Users className="w-5 h-5 text-purple-600" />
+              Start virtual call with stakeholders
             </DialogTitle>
             <DialogDescription>
               Speaking with multiple perspectives on a brainstorming call.
@@ -551,7 +649,7 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
           <div className="flex justify-end">
             <Button asChild>
               <a href="https://app.wavepitch.ai/app/create" target="_blank" rel="noopener noreferrer">
-                Start Brainstorm
+                Start Call
               </a>
             </Button>
           </div>

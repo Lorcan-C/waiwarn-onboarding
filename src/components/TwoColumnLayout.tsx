@@ -108,14 +108,14 @@ const Column = ({ column, tabs, onStuckClick }: ColumnProps) => {
 };
 
 const leftTabs: { id: ViewType; label: string }[] = [
-  { id: "calendar", label: "Calendar" },
-  { id: "tasks", label: "Tasks" },
-  { id: "goals", label: "Goals" },
+  { id: "tasks", label: "Onboarding tasks" },
+  { id: "calendar", label: "Onboarding calendar" },
+  { id: "goals", label: "Onboarding goals" },
 ];
 
 const rightTabs: { id: ViewType; label: string }[] = [
-  { id: "detail", label: "Detail" },
-  { id: "povs", label: "Key Perspectives" },
+  { id: "tasks", label: "Task details" },
+  { id: "povs", label: "Key perspectives" },
 ];
 
 interface TwoColumnLayoutProps {
