@@ -686,7 +686,7 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
           </div>
           <div className="flex justify-end">
             <Button asChild>
-              <a href="https://app.wavepitch.ai/app/create" target="_blank" rel="noopener noreferrer">
+              <a href="https://app.wavepitch.ai/app/tasks" target="_blank" rel="noopener noreferrer">
                 Get Feedback
               </a>
             </Button>
