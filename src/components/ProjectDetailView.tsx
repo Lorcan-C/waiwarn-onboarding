@@ -8,17 +8,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-
-interface Stakeholder {
-  id: string;
-  name: string;
-  role: string;
-  initials: string;
-}
+import StageIndicator from "@/components/StageIndicator";
+import AIAssistanceCard from "@/components/AIAssistanceCard";
+import { ProjectStage, StageInfo, Stakeholder } from "@/types/project";
 
 interface ItemDetail {
   title: string;
-  stage: number;
+  currentStage: ProjectStage;
+  stages: Record<ProjectStage, StageInfo>;
   description: string;
   stakeholders: Stakeholder[];
   notes: string;
@@ -28,7 +25,14 @@ interface ItemDetail {
 const taskData: Record<string, ItemDetail> = {
   "1": {
     title: "Review Q2 proposal draft",
-    stage: 2, // Draft
+    currentStage: 'draft',
+    stages: {
+      frame: { completed: true, completedAt: '2024-01-10' },
+      plan: { completed: true, completedAt: '2024-01-12', aiAssisted: true },
+      draft: { completed: false, aiAssisted: true },
+      update: { completed: false },
+      deliver: { completed: false }
+    },
     description: "Review and finalize the Q2 proposal draft. Key deliverables include executive summary, budget breakdown, and timeline.",
     stakeholders: [
       { id: "1", name: "Sarah Chen", role: "Product Manager", initials: "SC" },
@@ -38,7 +42,14 @@ const taskData: Record<string, ItemDetail> = {
   },
   "2": {
     title: "Prepare meeting notes",
-    stage: 3, // Review
+    currentStage: 'update',
+    stages: {
+      frame: { completed: true, completedAt: '2024-01-08' },
+      plan: { completed: true, completedAt: '2024-01-09', aiAssisted: true },
+      draft: { completed: true, completedAt: '2024-01-11', aiAssisted: true },
+      update: { completed: false },
+      deliver: { completed: false }
+    },
     description: "Compile and format notes from last week's strategy meetings. Include action items and deadlines.",
     stakeholders: [
       { id: "3", name: "Lisa Park", role: "Design Lead", initials: "LP" },
@@ -47,7 +58,14 @@ const taskData: Record<string, ItemDetail> = {
   },
   "3": {
     title: "Update stakeholder map",
-    stage: 0, // Ready
+    currentStage: 'frame',
+    stages: {
+      frame: { completed: false },
+      plan: { completed: false, aiAssisted: true },
+      draft: { completed: false, aiAssisted: true },
+      update: { completed: false },
+      deliver: { completed: false }
+    },
     description: "Map out key stakeholders for the new product initiative. Identify decision-makers and influencers.",
     stakeholders: [
       { id: "1", name: "Sarah Chen", role: "Product Manager", initials: "SC" },
@@ -58,7 +76,14 @@ const taskData: Record<string, ItemDetail> = {
   },
   "4": {
     title: "Read onboarding docs",
-    stage: 1, // Frame
+    currentStage: 'plan',
+    stages: {
+      frame: { completed: true, completedAt: '2024-01-05' },
+      plan: { completed: false, aiAssisted: true },
+      draft: { completed: false, aiAssisted: true },
+      update: { completed: false },
+      deliver: { completed: false }
+    },
     description: "Go through company onboarding documentation including policies, tools setup, and team introductions.",
     stakeholders: [
       { id: "6", name: "HR Team", role: "Human Resources", initials: "HR" },
@@ -67,7 +92,14 @@ const taskData: Record<string, ItemDetail> = {
   },
   "5": {
     title: "Schedule 1:1 with mentor",
-    stage: 0, // Ready
+    currentStage: 'deliver',
+    stages: {
+      frame: { completed: true, completedAt: '2024-01-02' },
+      plan: { completed: true, completedAt: '2024-01-03', aiAssisted: true },
+      draft: { completed: true, completedAt: '2024-01-04', aiAssisted: true },
+      update: { completed: true, completedAt: '2024-01-05' },
+      deliver: { completed: false }
+    },
     description: "Set up recurring 1:1 meeting with assigned mentor. Discuss goals and expectations for mentorship.",
     stakeholders: [
       { id: "7", name: "David Lee", role: "Senior Engineer", initials: "DL" },
@@ -80,7 +112,14 @@ const taskData: Record<string, ItemDetail> = {
 const meetingData: Record<string, ItemDetail> = {
   "1": {
     title: "Team Standup",
-    stage: 4, // Deliver
+    currentStage: 'deliver',
+    stages: {
+      frame: { completed: true, completedAt: '2024-01-01' },
+      plan: { completed: true, completedAt: '2024-01-01', aiAssisted: true },
+      draft: { completed: true, completedAt: '2024-01-01', aiAssisted: true },
+      update: { completed: true, completedAt: '2024-01-01' },
+      deliver: { completed: false }
+    },
     description: "Daily team sync to share progress, blockers, and plans for the day. Keep updates brief and focused.",
     stakeholders: [
       { id: "8", name: "Engineering Team", role: "Development", initials: "ET" },
@@ -89,7 +128,14 @@ const meetingData: Record<string, ItemDetail> = {
   },
   "2": {
     title: "Client Call",
-    stage: 2, // Draft
+    currentStage: 'draft',
+    stages: {
+      frame: { completed: true, completedAt: '2024-01-10' },
+      plan: { completed: true, completedAt: '2024-01-12', aiAssisted: true },
+      draft: { completed: false, aiAssisted: true },
+      update: { completed: false },
+      deliver: { completed: false }
+    },
     description: "Quarterly review call with Acme Corp. Discuss project progress, upcoming milestones, and any concerns.",
     stakeholders: [
       { id: "9", name: "John Smith", role: "Account Manager", initials: "JS" },
@@ -99,7 +145,14 @@ const meetingData: Record<string, ItemDetail> = {
   },
   "3": {
     title: "1:1 with Manager",
-    stage: 1, // Frame
+    currentStage: 'plan',
+    stages: {
+      frame: { completed: true, completedAt: '2024-01-14' },
+      plan: { completed: false, aiAssisted: true },
+      draft: { completed: false, aiAssisted: true },
+      update: { completed: false },
+      deliver: { completed: false }
+    },
     description: "Weekly sync to discuss progress, blockers, and career development. Open forum for feedback and questions.",
     stakeholders: [
       { id: "11", name: "Your Manager", role: "Direct Manager", initials: "YM" },
@@ -114,8 +167,6 @@ interface ProjectDetailViewProps {
   selectedItemId?: string;
   selectedItemType?: string;
 }
-
-const stages = ["Ready", "Frame", "Draft", "Review", "Deliver"];
 
 const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemType }: ProjectDetailViewProps) => {
   const [reviewDocOpen, setReviewDocOpen] = useState(false);
@@ -134,7 +185,6 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
   };
 
   const itemData = getItemData();
-  const currentStageIndex = itemData?.stage ?? 1;
 
   if (!selectedItemId || !itemData) {
     return (
@@ -143,6 +193,15 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
       </div>
     );
   }
+
+  const handleOpenDocReview = () => {
+    window.open("https://app.wavepitch.ai/app/review", "_blank");
+  };
+
+  const handleGetAIFeedback = () => {
+    // For now, open the same review tool
+    window.open("https://app.wavepitch.ai/app/review", "_blank");
+  };
 
   return (
     <div className="space-y-6">
@@ -179,31 +238,18 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
       {/* Stage Indicator */}
       <div>
         <p className="text-sm font-medium text-gray-700 mb-3">Progress Stage</p>
-        <div className="flex items-center gap-1">
-          {stages.map((stage, index) => (
-            <div key={stage} className="flex items-center">
-              <div
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                  index === currentStageIndex
-                    ? "bg-blue-600 text-white"
-                    : index < currentStageIndex
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-gray-100 text-gray-500"
-                }`}
-              >
-                {stage}
-              </div>
-              {index < stages.length - 1 && (
-                <div
-                  className={`w-4 h-0.5 ${
-                    index < currentStageIndex ? "bg-blue-300" : "bg-gray-200"
-                  }`}
-                />
-              )}
-            </div>
-          ))}
-        </div>
+        <StageIndicator 
+          stages={itemData.stages} 
+          currentStage={itemData.currentStage} 
+        />
       </div>
+
+      {/* AI Assistance Card */}
+      <AIAssistanceCard 
+        currentStage={itemData.currentStage}
+        onGetAIFeedback={handleGetAIFeedback}
+        onOpenDocReview={handleOpenDocReview}
+      />
 
       {/* Description */}
       <div>

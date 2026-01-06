@@ -4,6 +4,7 @@ import ProjectDetailView from "@/components/ProjectDetailView";
 import GoalsView from "@/components/GoalsView";
 import POVsView from "@/components/POVsView";
 import { useLayoutStore, ViewType } from "@/store/layoutStore";
+import { ProjectStage } from "@/types/project";
 
 interface TabButtonProps {
   active: boolean;
@@ -33,18 +34,11 @@ const Column = ({ column, tabs }: ColumnProps) => {
   const { left, right, setActiveView, handleItemClick } = useLayoutStore();
   const columnState = column === "left" ? left : right;
 
-  const onItemClick = (itemId: string, itemType: string) => {
-    handleItemClick(column, itemId, itemType);
+  const onItemClick = (itemId: string, itemType: string, projectStage?: ProjectStage) => {
+    handleItemClick(column, itemId, itemType, projectStage);
   };
 
   const renderView = () => {
-    const props = {
-      column,
-      onItemClick,
-      selectedItemId: columnState.selectedItemId,
-      selectedItemType: columnState.selectedItemType,
-    };
-
     switch (columnState.activeView) {
       case "calendar":
         return <CalendarView column={column} onItemClick={onItemClick} />;
@@ -53,7 +47,13 @@ const Column = ({ column, tabs }: ColumnProps) => {
       case "goals":
         return <GoalsView column={column} onItemClick={onItemClick} />;
       case "povs":
-        return <POVsView column={column} onItemClick={onItemClick} />;
+        return (
+          <POVsView 
+            column={column} 
+            onItemClick={onItemClick}
+            currentProjectStage={columnState.currentProjectStage}
+          />
+        );
       case "detail":
         return (
           <ProjectDetailView
