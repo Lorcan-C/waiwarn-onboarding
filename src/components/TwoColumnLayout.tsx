@@ -1,3 +1,4 @@
+import { HelpCircle } from "lucide-react";
 import CalendarView from "@/components/CalendarView";
 import TasksView from "@/components/TasksView";
 import ProjectDetailView from "@/components/ProjectDetailView";
@@ -5,6 +6,7 @@ import GoalsView from "@/components/GoalsView";
 import POVsView from "@/components/POVsView";
 import { useLayoutStore, ViewType } from "@/store/layoutStore";
 import { ProjectStage } from "@/types/project";
+import { Button } from "@/components/ui/button";
 
 interface TabButtonProps {
   active: boolean;
@@ -28,9 +30,10 @@ const TabButton = ({ active, onClick, children }: TabButtonProps) => (
 interface ColumnProps {
   column: "left" | "right";
   tabs: { id: ViewType; label: string }[];
+  onStuckClick?: () => void;
 }
 
-const Column = ({ column, tabs }: ColumnProps) => {
+const Column = ({ column, tabs, onStuckClick }: ColumnProps) => {
   const { left, right, setActiveView, handleItemClick } = useLayoutStore();
   const columnState = column === "left" ? left : right;
 
@@ -71,16 +74,29 @@ const Column = ({ column, tabs }: ColumnProps) => {
   return (
     <div className={`flex flex-col ${column === "left" ? "border-r border-gray-200" : ""}`}>
       {/* Tab Bar */}
-      <div className="flex border-b border-gray-200 px-4">
-        {tabs.map((tab) => (
-          <TabButton
-            key={tab.id}
-            active={columnState.activeView === tab.id}
-            onClick={() => setActiveView(column, tab.id)}
+      <div className="flex border-b border-gray-200 px-4 justify-between">
+        <div className="flex">
+          {tabs.map((tab) => (
+            <TabButton
+              key={tab.id}
+              active={columnState.activeView === tab.id}
+              onClick={() => setActiveView(column, tab.id)}
+            >
+              {tab.label}
+            </TabButton>
+          ))}
+        </div>
+        {column === "right" && onStuckClick && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="my-auto text-gray-600 border-gray-300 hover:bg-gray-50"
+            onClick={onStuckClick}
           >
-            {tab.label}
-          </TabButton>
-        ))}
+            <HelpCircle className="w-4 h-4 mr-1" />
+            I'm stuck
+          </Button>
+        )}
       </div>
 
       {/* Content Area */}
@@ -102,11 +118,15 @@ const rightTabs: { id: ViewType; label: string }[] = [
   { id: "povs", label: "Key Perspectives" },
 ];
 
-const TwoColumnLayout = () => {
+interface TwoColumnLayoutProps {
+  onStuckClick: () => void;
+}
+
+const TwoColumnLayout = ({ onStuckClick }: TwoColumnLayoutProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 flex-1 min-h-0">
       <Column column="left" tabs={leftTabs} />
-      <Column column="right" tabs={rightTabs} />
+      <Column column="right" tabs={rightTabs} onStuckClick={onStuckClick} />
     </div>
   );
 };

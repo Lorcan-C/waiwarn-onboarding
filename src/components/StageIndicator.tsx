@@ -50,7 +50,7 @@ const StageIndicator = ({ stages, currentStage }: StageIndicatorProps) => {
             {showLightbulb && (
               <Lightbulb 
                 className={`absolute -top-1 -right-1 w-4 h-4 ${
-                  status === 'current' ? 'text-yellow-300' : 'text-yellow-500'
+                  status === 'current' ? 'text-blue-300' : 'text-blue-500'
                 }`} 
               />
             )}

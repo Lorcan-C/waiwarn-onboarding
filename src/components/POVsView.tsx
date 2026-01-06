@@ -125,7 +125,7 @@ const POVsView = ({ column, onItemClick, currentProjectStage }: POVsViewProps) =
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center gap-2 mb-6">
-        <Lightbulb className="w-5 h-5 text-amber-500" />
+        <Lightbulb className="w-5 h-5 text-blue-500" />
         <h2 className="text-lg font-semibold text-gray-800">Perspective Prompts</h2>
       </div>
 

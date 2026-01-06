@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { FileText, MessageSquare } from "lucide-react";
+import { useState, useEffect } from "react";
+import { FileText, MessageSquare, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,6 +24,7 @@ interface ItemDetail {
   description: string;
   stakeholders: Stakeholder[];
   notes: string;
+  workplan?: string;
   attendees?: string[];
   dateTime?: string;
 }
@@ -45,6 +46,7 @@ const taskData: Record<string, ItemDetail> = {
       { id: "2", name: "Mike Johnson", role: "Engineering Lead", initials: "MJ" },
     ],
     notes: "Awaiting feedback from finance team on budget section.",
+    workplan: "1. Review executive summary\n2. Check budget breakdown\n3. Validate timeline with stakeholders",
   },
   "2": {
     title: "Prepare meeting notes",
@@ -60,6 +62,7 @@ const taskData: Record<string, ItemDetail> = {
       { id: "3", name: "Lisa Park", role: "Design Lead", initials: "LP" },
     ],
     notes: "Check recording for exact quotes from stakeholders.",
+    workplan: "1. Gather all meeting recordings\n2. Extract key discussion points\n3. Compile action items list",
   },
   "3": {
     title: "Update stakeholder map",
@@ -77,6 +80,7 @@ const taskData: Record<string, ItemDetail> = {
       { id: "5", name: "Amy Roberts", role: "Customer Success", initials: "AR" },
     ],
     notes: "",
+    workplan: "1. Research org structure\n2. Identify key decision makers\n3. Map relationships and influence",
   },
   "4": {
     title: "Read onboarding docs",
@@ -92,6 +96,7 @@ const taskData: Record<string, ItemDetail> = {
       { id: "6", name: "HR Team", role: "Human Resources", initials: "HR" },
     ],
     notes: "Complete by end of first week. Reach out to IT if any access issues.",
+    workplan: "1. Read company handbook\n2. Complete IT setup\n3. Review team structure docs",
   },
   "5": {
     title: "Schedule 1:1 with mentor",
@@ -107,6 +112,7 @@ const taskData: Record<string, ItemDetail> = {
       { id: "7", name: "David Lee", role: "Senior Engineer", initials: "DL" },
     ],
     notes: "Check mentor's calendar availability for weekly slots.",
+    workplan: "1. Review mentor's calendar\n2. Propose meeting times\n3. Prepare discussion topics",
   },
 };
 
@@ -177,6 +183,11 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
   const [reviewDocOpen, setReviewDocOpen] = useState(false);
   const [brainstormOpen, setBrainstormOpen] = useState(false);
   const [isAddingTasks, setIsAddingTasks] = useState(false);
+  const [workplanReviewOpen, setWorkplanReviewOpen] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [titleValue, setTitleValue] = useState("");
+  const [descriptionValue, setDescriptionValue] = useState("");
   const { toast } = useToast();
   
   const { 
@@ -205,6 +216,18 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
   const isMeeting = selectedItemType === "meeting";
   const existingNotes = selectedItemId ? meetingNotes.notesByMeetingId[selectedItemId] : undefined;
   const extractedTasks = selectedItemId ? meetingNotes.extractedTasksByMeetingId[selectedItemId] || [] : [];
+
+  // Initialize editable values when item changes
+  useEffect(() => {
+    if (itemData) {
+      setTitleValue(itemData.title);
+      const combinedDesc = `${itemData.description}${itemData.notes ? '\n\n' + itemData.notes : ''}`;
+      setDescriptionValue(combinedDesc);
+      setIsEditingTitle(false);
+      setIsEditingDescription(false);
+      setWorkplanReviewOpen(false);
+    }
+  }, [selectedItemId, itemData?.title, itemData?.description, itemData?.notes]);
 
   if (!selectedItemId || !itemData) {
     return (
@@ -304,13 +327,47 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
 
   return (
     <div className="space-y-6">
-      {/* Header with Title and Action Buttons */}
+      {/* Header with Inline Editable Title, Description, and Action Buttons */}
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">{itemData.title}</h2>
-          <p className="text-sm text-gray-500 mt-1">
-            {selectedItemType === "task" ? "Task" : "Meeting"} ID: {selectedItemId}
-          </p>
+        <div className="flex-1 min-w-0">
+          {/* Editable Title */}
+          {isEditingTitle ? (
+            <input
+              type="text"
+              value={titleValue}
+              onChange={(e) => setTitleValue(e.target.value)}
+              onBlur={() => setIsEditingTitle(false)}
+              onKeyDown={(e) => e.key === 'Enter' && setIsEditingTitle(false)}
+              autoFocus
+              className="text-xl font-semibold text-gray-900 w-full bg-white border border-blue-500 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          ) : (
+            <h2 
+              onClick={() => setIsEditingTitle(true)}
+              className="text-xl font-semibold text-gray-900 cursor-text hover:bg-gray-100 rounded px-2 py-1 -mx-2 transition-colors"
+            >
+              {titleValue}
+            </h2>
+          )}
+          
+          {/* Editable Description/Notes (combined) */}
+          {isEditingDescription ? (
+            <textarea
+              value={descriptionValue}
+              onChange={(e) => setDescriptionValue(e.target.value)}
+              onBlur={() => setIsEditingDescription(false)}
+              autoFocus
+              rows={3}
+              className="mt-2 w-full text-sm text-gray-600 bg-white border border-blue-500 rounded px-2 py-1 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          ) : (
+            <p 
+              onClick={() => setIsEditingDescription(true)}
+              className="text-sm text-gray-600 mt-2 cursor-text hover:bg-gray-100 rounded px-2 py-1 -mx-2 transition-colors whitespace-pre-line"
+            >
+              {descriptionValue || 'Add description...'}
+            </p>
+          )}
         </div>
         <div className="flex gap-2 flex-shrink-0">
           <Button
@@ -345,26 +402,63 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
         </div>
       )}
 
+      {/* Workplan - Only show for tasks */}
+      {!isMeeting && (
+        <div className="relative">
+          <label className="text-sm font-medium text-gray-700 block mb-2">
+            Workplan
+          </label>
+          <textarea
+            className="w-full rounded-lg border border-gray-200 p-3 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows={4}
+            placeholder="Outline your approach and next steps..."
+            defaultValue={itemData.workplan}
+            key={`workplan-${selectedItemId}`}
+          />
+          
+          {/* Review Workplan Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setWorkplanReviewOpen(!workplanReviewOpen)}
+            className="mt-2 relative border-blue-300 text-blue-700 hover:bg-blue-100"
+          >
+            Review Workplan
+            <Lightbulb className="absolute -top-1 -right-1 w-4 h-4 text-blue-500" />
+          </Button>
+          
+          {/* AI Feedback Popup */}
+          {workplanReviewOpen && (
+            <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start gap-3">
+                <Lightbulb className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-blue-800">AI Workplan Feedback</p>
+                  <p className="text-sm text-blue-700">
+                    Your workplan looks structured. Consider adding specific deadlines 
+                    and breaking down larger steps into smaller, actionable items.
+                  </p>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="p-0 h-auto text-blue-600 hover:text-blue-800"
+                    onClick={() => setWorkplanReviewOpen(false)}
+                  >
+                    Dismiss
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* AI Assistance Card */}
       <AIAssistanceCard 
         currentStage={itemData.currentStage}
         onGetAIFeedback={handleGetAIFeedback}
         onOpenDocReview={handleOpenDocReview}
       />
-
-      {/* Description */}
-      <div>
-        <label className="text-sm font-medium text-gray-700 block mb-2">
-          Description
-        </label>
-        <textarea
-          className="w-full rounded-lg border border-gray-200 p-3 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          rows={4}
-          placeholder="Add project description..."
-          defaultValue={itemData.description}
-          key={`desc-${selectedItemId}`}
-        />
-      </div>
 
       {/* Stakeholders */}
       <div>
@@ -416,22 +510,6 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
               meetingTitle={itemData.title}
             />
           )}
-        </div>
-      )}
-
-      {/* Notes - Only show for non-meetings */}
-      {!isMeeting && (
-        <div>
-          <label className="text-sm font-medium text-gray-700 block mb-2">
-            Notes
-          </label>
-          <textarea
-            className="w-full rounded-lg border border-gray-200 p-3 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            rows={3}
-            placeholder="Add notes..."
-            defaultValue={itemData.notes}
-            key={`notes-${selectedItemId}`}
-          />
         </div>
       )}
 
