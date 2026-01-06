@@ -1,7 +1,16 @@
 import { useState } from "react";
+import { HelpCircle, CheckCircle2 } from "lucide-react";
 import CalendarView from "@/components/CalendarView";
 import TasksView from "@/components/TasksView";
 import ProjectDetailView from "@/components/ProjectDetailView";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 // Task data for lookup
 const taskData: Record<string, { title: string }> = {
@@ -16,6 +25,8 @@ const Index = () => {
   const [leftTab, setLeftTab] = useState<"calendar" | "tasks" | "goals">("calendar");
   const [rightTab, setRightTab] = useState<"tasks" | "povs" | "detail">("tasks");
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [stuckModalOpen, setStuckModalOpen] = useState(false);
+  const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
 
   const handleTaskClick = (taskId: string) => {
     setSelectedTaskId(taskId);
@@ -143,8 +154,90 @@ const Index = () => {
               </div>
             </div>
           </div>
+
+          {/* Footer Bar */}
+          <div className="border-t border-gray-200 p-4 flex justify-between">
+            <Button
+              variant="outline"
+              className="text-gray-600 border-gray-300 hover:bg-gray-50"
+              onClick={() => setStuckModalOpen(true)}
+            >
+              <HelpCircle className="w-4 h-4 mr-2" />
+              I'm stuck
+            </Button>
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={() => setCheckoutModalOpen(true)}
+            >
+              <CheckCircle2 className="w-4 h-4 mr-2" />
+              Check out for today
+            </Button>
+          </div>
         </div>
       </div>
+
+      {/* Stuck Modal */}
+      <Dialog open={stuckModalOpen} onOpenChange={setStuckModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Need help?</DialogTitle>
+            <DialogDescription>
+              Tell us what you're stuck on and we'll help you get back on track.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <textarea
+              className="w-full rounded-lg border border-gray-200 p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={4}
+              placeholder="Describe what you're having trouble with..."
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setStuckModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              Get Help
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Checkout Modal */}
+      <Dialog open={checkoutModalOpen} onOpenChange={setCheckoutModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Check out for today</DialogTitle>
+            <DialogDescription>
+              Ready to wrap up? Let's review what you accomplished today.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-3">
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm font-medium text-gray-700">Today's Summary</p>
+              <p className="text-sm text-gray-500 mt-1">3 tasks completed • 2 meetings attended</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-2">
+                Any notes for tomorrow?
+              </label>
+              <textarea
+                className="w-full rounded-lg border border-gray-200 p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={3}
+                placeholder="Optional notes..."
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setCheckoutModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              Check Out
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
