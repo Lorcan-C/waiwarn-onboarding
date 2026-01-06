@@ -6,7 +6,7 @@ import CheckOutModal from "@/components/CheckOutModal";
 import UnstuckModal from "@/components/UnstuckModal";
 import WelcomeModal from "@/components/WelcomeModal";
 import OnboardingSetupView from "@/components/OnboardingSetupView";
-import waiwarnLogo from "@/assets/waiwarn-logo.png";
+import wavepitchLogo from "@/assets/wavepitch-logo.png";
 import forestBackground from "@/assets/forest_v3.webp";
 import {
   Dialog,
@@ -48,7 +48,7 @@ const Index = () => {
       <div className="relative z-10 flex flex-col items-center min-h-screen py-8 px-6">
         {/* Header with Logo and Check-in Button */}
         <div className="h-20 flex items-center justify-between w-full max-w-[1120px] mb-8">
-          <img src={waiwarnLogo} alt="What Am I Working On Right Now" className="h-20" />
+          <img src={wavepitchLogo} alt="Wavepitch - The AI Onboarding Tool" className="h-20" />
           <div className="flex gap-2">
             <Button
               variant="outline"
