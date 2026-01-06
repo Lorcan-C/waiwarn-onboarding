@@ -69,7 +69,7 @@ const CalendarView = ({ column, onItemClick }: CalendarViewProps) => {
   return (
     <div className="space-y-6">
       {/* Date Header - Flip Card Style */}
-      <div className="bg-gray-900 rounded-lg p-4 text-center">
+      <div className="bg-blue-600 rounded-lg p-4 text-center">
         <p className="text-gray-400 text-sm uppercase tracking-wide">
           {format(today, "EEEE")}
         </p>
