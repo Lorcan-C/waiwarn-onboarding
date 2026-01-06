@@ -40,7 +40,7 @@ interface LayoutState {
 
 export const useLayoutStore = create<LayoutState>((set) => ({
   left: {
-    activeView: "calendar",
+    activeView: "tasks",
   },
   right: {
     activeView: "tasks",
