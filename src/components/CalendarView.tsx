@@ -68,16 +68,12 @@ const CalendarView = ({ column, onItemClick }: CalendarViewProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Date Header - Flip Card Style */}
-      <div className="bg-blue-600 rounded-lg p-4 text-center">
-        <p className="text-gray-400 text-sm uppercase tracking-wide">
-          {format(today, "EEEE")}
-        </p>
-        <p className="text-white text-5xl font-bold my-2">
-          {format(today, "d")}
-        </p>
-        <p className="text-gray-400 text-sm">
-          {format(today, "MMMM yyyy")}
+      {/* Date Header - Single Row */}
+      <div className="bg-blue-600 rounded-lg p-4">
+        <p className="text-white text-sm uppercase tracking-wide flex items-baseline gap-3">
+          <span>{format(today, "EEEE")}</span>
+          <span>{format(today, "d")}</span>
+          <span>{format(today, "MMMM yyyy")}</span>
         </p>
       </div>
 
