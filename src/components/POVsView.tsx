@@ -13,7 +13,7 @@ interface POV {
 }
 
 const samplePOVs: POV[] = [
-  // PURPOSE POVs (Frame stage)
+  // PROCESS POVs (Plan stage)
   {
     id: "1",
     stakeholder: "Key Stakeholder",
@@ -21,7 +21,7 @@ const samplePOVs: POV[] = [
     prompt: "Who are the key stakeholders for this work? Have you identified all decision-makers?",
     project: "Q2 Strategy Proposal",
     povType: "purpose",
-    applicableStages: ["frame"],
+    applicableStages: ["plan"],
     color: "bg-purple-500",
   },
   {
@@ -31,7 +31,7 @@ const samplePOVs: POV[] = [
     prompt: "What outcome does the client stakeholder need? What would success look like from their perspective?",
     project: "Q2 Strategy Proposal",
     povType: "purpose",
-    applicableStages: ["frame"],
+    applicableStages: ["plan"],
     color: "bg-purple-500",
   },
   // PROCESS POVs (Plan stage)

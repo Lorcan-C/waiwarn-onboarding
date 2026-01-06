@@ -34,7 +34,6 @@ const taskData: Record<string, ItemDetail> = {
     title: "Review Q2 proposal draft",
     currentStage: 'draft',
     stages: {
-      frame: { completed: true, completedAt: '2024-01-10' },
       plan: { completed: true, completedAt: '2024-01-12', aiAssisted: true },
       draft: { completed: false, aiAssisted: true },
       update: { completed: false },
@@ -51,7 +50,6 @@ const taskData: Record<string, ItemDetail> = {
     title: "Prepare meeting notes",
     currentStage: 'update',
     stages: {
-      frame: { completed: true, completedAt: '2024-01-08' },
       plan: { completed: true, completedAt: '2024-01-09', aiAssisted: true },
       draft: { completed: true, completedAt: '2024-01-11', aiAssisted: true },
       update: { completed: false },
@@ -65,9 +63,8 @@ const taskData: Record<string, ItemDetail> = {
   },
   "3": {
     title: "Update stakeholder map",
-    currentStage: 'frame',
+    currentStage: 'plan',
     stages: {
-      frame: { completed: false },
       plan: { completed: false, aiAssisted: true },
       draft: { completed: false, aiAssisted: true },
       update: { completed: false },
@@ -85,7 +82,6 @@ const taskData: Record<string, ItemDetail> = {
     title: "Read onboarding docs",
     currentStage: 'plan',
     stages: {
-      frame: { completed: true, completedAt: '2024-01-05' },
       plan: { completed: false, aiAssisted: true },
       draft: { completed: false, aiAssisted: true },
       update: { completed: false },
@@ -101,7 +97,6 @@ const taskData: Record<string, ItemDetail> = {
     title: "Schedule 1:1 with mentor",
     currentStage: 'deliver',
     stages: {
-      frame: { completed: true, completedAt: '2024-01-02' },
       plan: { completed: true, completedAt: '2024-01-03', aiAssisted: true },
       draft: { completed: true, completedAt: '2024-01-04', aiAssisted: true },
       update: { completed: true, completedAt: '2024-01-05' },
@@ -121,7 +116,6 @@ const meetingData: Record<string, ItemDetail> = {
     title: "Team Standup",
     currentStage: 'deliver',
     stages: {
-      frame: { completed: true, completedAt: '2024-01-01' },
       plan: { completed: true, completedAt: '2024-01-01', aiAssisted: true },
       draft: { completed: true, completedAt: '2024-01-01', aiAssisted: true },
       update: { completed: true, completedAt: '2024-01-01' },
@@ -139,7 +133,6 @@ const meetingData: Record<string, ItemDetail> = {
     title: "Client Call",
     currentStage: 'draft',
     stages: {
-      frame: { completed: true, completedAt: '2024-01-10' },
       plan: { completed: true, completedAt: '2024-01-12', aiAssisted: true },
       draft: { completed: false, aiAssisted: true },
       update: { completed: false },
@@ -158,7 +151,6 @@ const meetingData: Record<string, ItemDetail> = {
     title: "1:1 with Manager",
     currentStage: 'plan',
     stages: {
-      frame: { completed: true, completedAt: '2024-01-14' },
       plan: { completed: false, aiAssisted: true },
       draft: { completed: false, aiAssisted: true },
       update: { completed: false },
@@ -342,14 +334,16 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
         </div>
       </div>
 
-      {/* Stage Indicator */}
-      <div>
-        <p className="text-sm font-medium text-gray-700 mb-3">Progress Stage</p>
-        <StageIndicator 
-          stages={itemData.stages} 
-          currentStage={itemData.currentStage} 
-        />
-      </div>
+      {/* Stage Indicator - Only show for tasks */}
+      {!isMeeting && (
+        <div>
+          <p className="text-sm font-medium text-gray-700 mb-3">Stage</p>
+          <StageIndicator 
+            stages={itemData.stages} 
+            currentStage={itemData.currentStage} 
+          />
+        </div>
+      )}
 
       {/* AI Assistance Card */}
       <AIAssistanceCard 
