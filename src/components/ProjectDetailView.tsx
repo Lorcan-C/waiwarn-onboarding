@@ -194,8 +194,10 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
             </p>
           </div>
           <div className="flex justify-end">
-            <Button onClick={() => setReviewDocOpen(false)}>
-              Got it
+            <Button asChild>
+              <a href="https://app.wavepitch.ai/app/review" target="_blank" rel="noopener noreferrer">
+                Open Review
+              </a>
             </Button>
           </div>
         </DialogContent>
@@ -220,8 +222,10 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
             </p>
           </div>
           <div className="flex justify-end">
-            <Button onClick={() => setBrainstormOpen(false)}>
-              Got it
+            <Button asChild>
+              <a href="https://app.wavepitch.ai/app/create" target="_blank" rel="noopener noreferrer">
+                Start Brainstorm
+              </a>
             </Button>
           </div>
         </DialogContent>
