@@ -1,7 +1,6 @@
 import CalendarView from "@/components/CalendarView";
 import TasksView from "@/components/TasksView";
 import ProjectDetailView from "@/components/ProjectDetailView";
-import OnboardingSetupView from "@/components/OnboardingSetupView";
 import GoalsView from "@/components/GoalsView";
 import { useLayoutStore, ViewType } from "@/store/layoutStore";
 
@@ -53,7 +52,13 @@ const Column = ({ column, tabs }: ColumnProps) => {
       case "goals":
         return <GoalsView column={column} onItemClick={onItemClick} />;
       case "povs":
-        return <OnboardingSetupView column={column} onItemClick={onItemClick} />;
+        return (
+          <div className="flex flex-col items-center justify-center h-full text-center p-8">
+            <p className="text-gray-500 text-sm">
+              POV prompts will appear here based on your current project.
+            </p>
+          </div>
+        );
       case "detail":
         return (
           <ProjectDetailView

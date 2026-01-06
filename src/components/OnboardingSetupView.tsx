@@ -167,11 +167,10 @@ const QuestionCard = ({ label, question, answer, onUpdate }: QuestionCardProps) 
 };
 
 interface OnboardingSetupViewProps {
-  column: "left" | "right";
-  onItemClick: (itemId: string, itemType: string) => void;
+  onClose?: () => void;
 }
 
-const OnboardingSetupView = ({ column, onItemClick }: OnboardingSetupViewProps) => {
+const OnboardingSetupView = ({ onClose }: OnboardingSetupViewProps) => {
   const [data, setData] = useState<OnboardingData>({
     role: "",
     why: {},
@@ -201,6 +200,7 @@ const OnboardingSetupView = ({ column, onItemClick }: OnboardingSetupViewProps) 
 
   const handleSave = () => {
     console.log("Saving onboarding data:", data);
+    onClose?.();
   };
 
   return (
