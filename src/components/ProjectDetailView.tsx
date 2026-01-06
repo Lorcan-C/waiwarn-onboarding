@@ -1,6 +1,24 @@
+// Task data for lookup
+const taskData: Record<string, { title: string }> = {
+  "1": { title: "Review Q2 proposal draft" },
+  "2": { title: "Prepare meeting notes" },
+  "3": { title: "Update stakeholder map" },
+  "4": { title: "Read onboarding docs" },
+  "5": { title: "Schedule 1:1 with mentor" },
+};
+
+// Meeting data for lookup
+const meetingData: Record<string, { title: string }> = {
+  "1": { title: "Team Standup" },
+  "2": { title: "Client Call" },
+  "3": { title: "1:1 with Manager" },
+};
+
 interface ProjectDetailViewProps {
-  taskId: string;
-  taskTitle: string;
+  column: "left" | "right";
+  onItemClick: (itemId: string, itemType: string) => void;
+  selectedItemId?: string;
+  selectedItemType?: string;
 }
 
 const stages = ["Ready", "Frame", "Draft", "Review", "Deliver"];
@@ -11,15 +29,37 @@ const sampleStakeholders = [
   { id: "3", name: "Lisa Park", role: "Design Lead", initials: "LP" },
 ];
 
-const ProjectDetailView = ({ taskId, taskTitle }: ProjectDetailViewProps) => {
+const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemType }: ProjectDetailViewProps) => {
   const currentStageIndex = 1; // Frame stage for demo
+
+  // Get title based on item type
+  const getTitle = () => {
+    if (!selectedItemId) return "Select an item";
+    if (selectedItemType === "task") {
+      return taskData[selectedItemId]?.title || "Unknown Task";
+    }
+    if (selectedItemType === "meeting") {
+      return meetingData[selectedItemId]?.title || "Unknown Meeting";
+    }
+    return "Unknown Item";
+  };
+
+  if (!selectedItemId) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-gray-500">Select an item to view details</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       {/* Project Title */}
       <div>
-        <h2 className="text-xl font-semibold text-gray-900">{taskTitle}</h2>
-        <p className="text-sm text-gray-500 mt-1">Task ID: {taskId}</p>
+        <h2 className="text-xl font-semibold text-gray-900">{getTitle()}</h2>
+        <p className="text-sm text-gray-500 mt-1">
+          {selectedItemType === "task" ? "Task" : "Meeting"} ID: {selectedItemId}
+        </p>
       </div>
 
       {/* Stage Indicator */}

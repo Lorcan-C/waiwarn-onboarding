@@ -166,7 +166,12 @@ const QuestionCard = ({ label, question, answer, onUpdate }: QuestionCardProps) 
   );
 };
 
-const OnboardingSetupView = () => {
+interface OnboardingSetupViewProps {
+  column: "left" | "right";
+  onItemClick: (itemId: string, itemType: string) => void;
+}
+
+const OnboardingSetupView = ({ column, onItemClick }: OnboardingSetupViewProps) => {
   const [data, setData] = useState<OnboardingData>({
     role: "",
     why: {},

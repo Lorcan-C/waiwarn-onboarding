@@ -30,11 +30,16 @@ const formatTimeDisplay = (time: string): string => {
   return hour > 12 ? `${hour - 12}pm` : `${hour}am`;
 };
 
-const CalendarView = () => {
+interface CalendarViewProps {
+  column: "left" | "right";
+  onItemClick: (itemId: string, itemType: string) => void;
+}
+
+const CalendarView = ({ column, onItemClick }: CalendarViewProps) => {
   const today = new Date();
 
   const handleMeetingClick = (meeting: Meeting) => {
-    console.log("Meeting clicked:", meeting);
+    onItemClick(meeting.id, "meeting");
   };
 
   const getMeetingAtSlot = (slot: string): Meeting | undefined => {
