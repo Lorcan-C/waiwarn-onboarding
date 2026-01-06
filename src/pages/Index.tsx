@@ -65,32 +65,20 @@ const Index = () => {
               <Sun className="w-4 h-4 mr-2" />
               Check In
             </Button>
+            <Button
+              onClick={() => setCheckoutModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <CheckCircle2 className="w-4 h-4 mr-2" />
+              Check out
+            </Button>
           </div>
         </div>
 
         {/* Glass Container */}
         <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl w-full max-w-[1120px] flex-1 overflow-hidden flex flex-col">
           {/* Two Column Layout */}
-          <TwoColumnLayout />
-
-          {/* Footer Bar */}
-          <div className="border-t border-gray-200 p-4 flex justify-between">
-            <Button
-              variant="outline"
-              className="text-gray-600 border-gray-300 hover:bg-gray-50"
-              onClick={() => setStuckModalOpen(true)}
-            >
-              <HelpCircle className="w-4 h-4 mr-2" />
-              I'm stuck
-            </Button>
-            <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-              onClick={() => setCheckoutModalOpen(true)}
-            >
-              <CheckCircle2 className="w-4 h-4 mr-2" />
-              Check out for today
-            </Button>
-          </div>
+          <TwoColumnLayout onStuckClick={() => setStuckModalOpen(true)} />
         </div>
       </div>
 
