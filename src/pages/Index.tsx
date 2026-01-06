@@ -1,4 +1,5 @@
 import { useState } from "react";
+import CalendarView from "@/components/CalendarView";
 
 const Index = () => {
   const [leftTab, setLeftTab] = useState<"calendar" | "tasks" | "goals">("calendar");
@@ -72,9 +73,7 @@ const Index = () => {
 
               {/* Left Content Area */}
               <div className="flex-1 overflow-y-auto p-6">
-                {leftTab === "calendar" && (
-                  <p className="text-gray-500">Calendar View</p>
-                )}
+                {leftTab === "calendar" && <CalendarView />}
                 {leftTab === "tasks" && (
                   <p className="text-gray-500">Tasks View</p>
                 )}
