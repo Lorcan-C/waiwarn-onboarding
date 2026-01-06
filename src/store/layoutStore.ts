@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { ProjectStage } from "@/types/project";
 
 export type ViewType = "calendar" | "tasks" | "goals" | "povs" | "detail";
 
@@ -6,6 +7,7 @@ interface ColumnState {
   activeView: ViewType;
   selectedItemId?: string;
   selectedItemType?: string;
+  currentProjectStage?: ProjectStage;
 }
 
 interface LayoutState {
@@ -15,7 +17,8 @@ interface LayoutState {
   handleItemClick: (
     fromColumn: "left" | "right",
     itemId: string,
-    itemType: string
+    itemType: string,
+    projectStage?: ProjectStage
   ) => void;
 }
 
@@ -30,7 +33,7 @@ export const useLayoutStore = create<LayoutState>((set) => ({
     set((state) => ({
       [column]: { ...state[column], activeView: view },
     })),
-  handleItemClick: (fromColumn, itemId, itemType) =>
+  handleItemClick: (fromColumn, itemId, itemType, projectStage) =>
     set((state) => {
       const targetColumn = fromColumn === "left" ? "right" : "left";
       
@@ -50,6 +53,7 @@ export const useLayoutStore = create<LayoutState>((set) => ({
           activeView: targetView,
           selectedItemId: itemId,
           selectedItemType: itemType,
+          currentProjectStage: projectStage,
         },
       };
     }),
