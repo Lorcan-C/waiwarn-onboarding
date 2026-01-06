@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { HelpCircle, CheckCircle2, Sun } from "lucide-react";
+import { HelpCircle, CheckCircle2, Sun, Settings } from "lucide-react";
 import TwoColumnLayout from "@/components/TwoColumnLayout";
 import CheckInModal from "@/components/CheckInModal";
+import OnboardingSetupView from "@/components/OnboardingSetupView";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +16,7 @@ const Index = () => {
   const [stuckModalOpen, setStuckModalOpen] = useState(false);
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
   const [checkInModalOpen, setCheckInModalOpen] = useState(false);
+  const [managerSetupModalOpen, setManagerSetupModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 overflow-auto relative">
@@ -31,13 +33,23 @@ const Index = () => {
           <div className="text-2xl font-bold tracking-tight text-slate-800">
             What Am I Working on Right Now <span className="text-blue-600">(WAIWARN)</span>
           </div>
-          <Button
-            onClick={() => setCheckInModalOpen(true)}
-            className="bg-amber-500 hover:bg-amber-600 text-white"
-          >
-            <Sun className="w-4 h-4 mr-2" />
-            Check In
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setManagerSetupModalOpen(true)}
+              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              Manager Set Up
+            </Button>
+            <Button
+              onClick={() => setCheckInModalOpen(true)}
+              className="bg-amber-500 hover:bg-amber-600 text-white"
+            >
+              <Sun className="w-4 h-4 mr-2" />
+              Check In
+            </Button>
+          </div>
         </div>
 
         {/* Glass Container */}
@@ -134,6 +146,19 @@ const Index = () => {
         isOpen={checkInModalOpen}
         onClose={() => setCheckInModalOpen(false)}
       />
+
+      {/* Manager Set Up Modal */}
+      <Dialog open={managerSetupModalOpen} onOpenChange={setManagerSetupModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Manager Set Up</DialogTitle>
+            <DialogDescription>
+              Configure onboarding guidance for your new hire.
+            </DialogDescription>
+          </DialogHeader>
+          <OnboardingSetupView onClose={() => setManagerSetupModalOpen(false)} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
