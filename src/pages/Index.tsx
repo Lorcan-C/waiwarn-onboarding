@@ -4,6 +4,7 @@ import TwoColumnLayout from "@/components/TwoColumnLayout";
 import CheckInModal from "@/components/CheckInModal";
 import CheckOutModal from "@/components/CheckOutModal";
 import UnstuckModal from "@/components/UnstuckModal";
+import WelcomeModal from "@/components/WelcomeModal";
 import OnboardingSetupView from "@/components/OnboardingSetupView";
 import waiwarnLogo from "@/assets/waiwarn-logo.png";
 import {
@@ -20,7 +21,17 @@ const Index = () => {
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
   const [checkInModalOpen, setCheckInModalOpen] = useState(false);
   const [managerSetupModalOpen, setManagerSetupModalOpen] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(() => {
+    return !localStorage.getItem('waiwarn_welcomed');
+  });
 
+  const dismissWelcome = (startCheckIn = false) => {
+    localStorage.setItem('waiwarn_welcomed', 'true');
+    setShowWelcome(false);
+    if (startCheckIn) {
+      setCheckInModalOpen(true);
+    }
+  };
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 overflow-auto relative">
       {/* Background Layer */}
@@ -109,6 +120,13 @@ const Index = () => {
           <OnboardingSetupView onClose={() => setManagerSetupModalOpen(false)} />
         </DialogContent>
       </Dialog>
+
+      {/* Welcome Modal */}
+      <WelcomeModal
+        isOpen={showWelcome}
+        onClose={() => dismissWelcome(false)}
+        onStartCheckIn={() => dismissWelcome(true)}
+      />
     </div>
   );
 };
