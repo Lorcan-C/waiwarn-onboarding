@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { HelpCircle, CheckCircle2 } from "lucide-react";
+import { HelpCircle, CheckCircle2, Sun } from "lucide-react";
 import CalendarView from "@/components/CalendarView";
 import TasksView from "@/components/TasksView";
 import ProjectDetailView from "@/components/ProjectDetailView";
+import CheckInModal from "@/components/CheckInModal";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +28,7 @@ const Index = () => {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [stuckModalOpen, setStuckModalOpen] = useState(false);
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+  const [checkInModalOpen, setCheckInModalOpen] = useState(false);
 
   const handleTaskClick = (taskId: string) => {
     setSelectedTaskId(taskId);
@@ -64,11 +66,18 @@ const Index = () => {
 
       {/* Content Layer */}
       <div className="relative z-10 flex flex-col items-center min-h-screen py-8 px-6">
-        {/* Logo Placeholder */}
-        <div className="h-10 flex items-center justify-center mb-8">
+        {/* Header with Logo and Check-in Button */}
+        <div className="h-10 flex items-center justify-between w-full max-w-[1120px] mb-8">
           <div className="text-2xl font-bold tracking-tight text-slate-800">
             WAIWARN
           </div>
+          <Button
+            onClick={() => setCheckInModalOpen(true)}
+            className="bg-amber-500 hover:bg-amber-600 text-white"
+          >
+            <Sun className="w-4 h-4 mr-2" />
+            Check In
+          </Button>
         </div>
 
         {/* Glass Container */}
@@ -238,6 +247,12 @@ const Index = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Check-In Modal */}
+      <CheckInModal
+        isOpen={checkInModalOpen}
+        onClose={() => setCheckInModalOpen(false)}
+      />
     </div>
   );
 };
