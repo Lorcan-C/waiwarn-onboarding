@@ -1,10 +1,26 @@
 import { useState } from "react";
 import CalendarView from "@/components/CalendarView";
 import TasksView from "@/components/TasksView";
+import ProjectDetailView from "@/components/ProjectDetailView";
+
+// Task data for lookup
+const taskData: Record<string, { title: string }> = {
+  "1": { title: "Review Q2 proposal draft" },
+  "2": { title: "Prepare meeting notes" },
+  "3": { title: "Update stakeholder map" },
+  "4": { title: "Read onboarding docs" },
+  "5": { title: "Schedule 1:1 with mentor" },
+};
 
 const Index = () => {
   const [leftTab, setLeftTab] = useState<"calendar" | "tasks" | "goals">("calendar");
   const [rightTab, setRightTab] = useState<"tasks" | "povs" | "detail">("tasks");
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+
+  const handleTaskClick = (taskId: string) => {
+    setSelectedTaskId(taskId);
+    setRightTab("detail");
+  };
 
   const TabButton = ({
     active,
@@ -75,7 +91,7 @@ const Index = () => {
               {/* Left Content Area */}
               <div className="flex-1 overflow-y-auto p-6">
                 {leftTab === "calendar" && <CalendarView />}
-                {leftTab === "tasks" && <TasksView />}
+                {leftTab === "tasks" && <TasksView onTaskClick={handleTaskClick} />}
                 {leftTab === "goals" && (
                   <p className="text-gray-500">Goals View</p>
                 )}
@@ -115,7 +131,14 @@ const Index = () => {
                   <p className="text-gray-500">POVs View</p>
                 )}
                 {rightTab === "detail" && (
-                  <p className="text-gray-500">Detail View</p>
+                  selectedTaskId ? (
+                    <ProjectDetailView
+                      taskId={selectedTaskId}
+                      taskTitle={taskData[selectedTaskId]?.title || "Unknown Task"}
+                    />
+                  ) : (
+                    <p className="text-gray-500">Select a task to view details</p>
+                  )
                 )}
               </div>
             </div>
