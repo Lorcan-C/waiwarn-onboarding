@@ -1,3 +1,14 @@
+import { useState } from "react";
+import { FileText, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+
 // Task data for lookup
 const taskData: Record<string, { title: string }> = {
   "1": { title: "Review Q2 proposal draft" },
@@ -30,6 +41,8 @@ const sampleStakeholders = [
 ];
 
 const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemType }: ProjectDetailViewProps) => {
+  const [reviewDocOpen, setReviewDocOpen] = useState(false);
+  const [brainstormOpen, setBrainstormOpen] = useState(false);
   const currentStageIndex = 1; // Frame stage for demo
 
   // Get title based on item type
@@ -54,12 +67,34 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
 
   return (
     <div className="space-y-6">
-      {/* Project Title */}
-      <div>
-        <h2 className="text-xl font-semibold text-gray-900">{getTitle()}</h2>
-        <p className="text-sm text-gray-500 mt-1">
-          {selectedItemType === "task" ? "Task" : "Meeting"} ID: {selectedItemId}
-        </p>
+      {/* Header with Title and Action Buttons */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">{getTitle()}</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            {selectedItemType === "task" ? "Task" : "Meeting"} ID: {selectedItemId}
+          </p>
+        </div>
+        <div className="flex gap-2 flex-shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setReviewDocOpen(true)}
+            className="text-xs"
+          >
+            <FileText className="w-3 h-3 mr-1" />
+            Review Doc
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setBrainstormOpen(true)}
+            className="text-xs"
+          >
+            <MessageSquare className="w-3 h-3 mr-1" />
+            Start Brainstorm
+          </Button>
+        </div>
       </div>
 
       {/* Stage Indicator */}
@@ -139,6 +174,58 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
           defaultValue="Awaiting feedback from finance team on budget section."
         />
       </div>
+
+      {/* Review Doc Modal */}
+      <Dialog open={reviewDocOpen} onOpenChange={setReviewDocOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="w-5 h-5 text-blue-600" />
+              Review Doc
+            </DialogTitle>
+            <DialogDescription>
+              Get multiple views on your work via in-document comment threads.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-gray-600">
+              This feature allows stakeholders to provide feedback directly within your document, 
+              creating threaded conversations around specific sections for clearer, more contextual reviews.
+            </p>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={() => setReviewDocOpen(false)}>
+              Got it
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Brainstorm Modal */}
+      <Dialog open={brainstormOpen} onOpenChange={setBrainstormOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-purple-600" />
+              Start Brainstorm
+            </DialogTitle>
+            <DialogDescription>
+              Speaking with multiple perspectives on a brainstorming call.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-gray-600">
+              This feature simulates a brainstorming session where you can hear different 
+              stakeholder perspectives, helping you explore ideas from multiple angles before committing to a direction.
+            </p>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={() => setBrainstormOpen(false)}>
+              Got it
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
