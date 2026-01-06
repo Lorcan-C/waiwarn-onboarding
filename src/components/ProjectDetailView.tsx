@@ -254,8 +254,14 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
 
   if (!selectedItemId || !itemData) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-gray-500">Select an item to view details</p>
+      <div className="flex flex-col items-center justify-center h-full text-center py-12">
+        <div className="text-muted-foreground mb-3">
+          <FileText className="w-12 h-12 mx-auto" />
+        </div>
+        <h3 className="text-lg font-medium text-foreground mb-1">No task selected</h3>
+        <p className="text-sm text-muted-foreground">
+          Select a task from the left panel to view details
+        </p>
       </div>
     );
   }
