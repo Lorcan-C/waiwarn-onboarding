@@ -10,7 +10,12 @@ import {
 } from "@/components/ui/dialog";
 import StageIndicator from "@/components/StageIndicator";
 import AIAssistanceCard from "@/components/AIAssistanceCard";
-import { ProjectStage, StageInfo, Stakeholder } from "@/types/project";
+import MeetingNotesDropzone from "@/components/MeetingNotesDropzone";
+import ExtractedTasksReview from "@/components/ExtractedTasksReview";
+import { ProjectStage, StageInfo, Stakeholder, ExtractedTask } from "@/types/project";
+import { useLayoutStore } from "@/store/layoutStore";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface ItemDetail {
   title: string;
@@ -19,6 +24,8 @@ interface ItemDetail {
   description: string;
   stakeholders: Stakeholder[];
   notes: string;
+  attendees?: string[];
+  dateTime?: string;
 }
 
 // Task data for lookup with full details
@@ -125,6 +132,8 @@ const meetingData: Record<string, ItemDetail> = {
       { id: "8", name: "Engineering Team", role: "Development", initials: "ET" },
     ],
     notes: "Prepare yesterday's accomplishments and today's focus areas.",
+    attendees: ["Alice", "Bob", "Charlie", "David"],
+    dateTime: "2024-01-15T09:00:00Z",
   },
   "2": {
     title: "Client Call",
@@ -142,6 +151,8 @@ const meetingData: Record<string, ItemDetail> = {
       { id: "10", name: "Emily Brown", role: "Client Lead (Acme)", initials: "EB" },
     ],
     notes: "Review latest metrics before call. Prepare demo of new features.",
+    attendees: ["John Smith", "Emily Brown", "Sarah Chen"],
+    dateTime: "2024-01-15T14:00:00Z",
   },
   "3": {
     title: "1:1 with Manager",
@@ -158,6 +169,8 @@ const meetingData: Record<string, ItemDetail> = {
       { id: "11", name: "Your Manager", role: "Direct Manager", initials: "YM" },
     ],
     notes: "Bring list of accomplishments this week. Prepare questions about upcoming project.",
+    attendees: ["You", "Your Manager"],
+    dateTime: "2024-01-15T16:00:00Z",
   },
 };
 
@@ -171,6 +184,18 @@ interface ProjectDetailViewProps {
 const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemType }: ProjectDetailViewProps) => {
   const [reviewDocOpen, setReviewDocOpen] = useState(false);
   const [brainstormOpen, setBrainstormOpen] = useState(false);
+  const [isAddingTasks, setIsAddingTasks] = useState(false);
+  const { toast } = useToast();
+  
+  const { 
+    meetingNotes, 
+    setMeetingNotes, 
+    setExtractedTasks, 
+    setIsExtracting, 
+    setExtractionError,
+    updateExtractedTaskSelection,
+    addTasksFromMeeting,
+  } = useLayoutStore();
 
   // Get item data based on type
   const getItemData = (): ItemDetail | null => {
@@ -185,6 +210,9 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
   };
 
   const itemData = getItemData();
+  const isMeeting = selectedItemType === "meeting";
+  const existingNotes = selectedItemId ? meetingNotes.notesByMeetingId[selectedItemId] : undefined;
+  const extractedTasks = selectedItemId ? meetingNotes.extractedTasksByMeetingId[selectedItemId] || [] : [];
 
   if (!selectedItemId || !itemData) {
     return (
@@ -194,12 +222,91 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
     );
   }
 
+  const handleNotesReceived = (content: string) => {
+    if (selectedItemId) {
+      setMeetingNotes(selectedItemId, content);
+    }
+  };
+
+  const handleExtractTasks = async () => {
+    if (!selectedItemId || !existingNotes) return;
+
+    setIsExtracting(true);
+    setExtractionError(null);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('extract-tasks', {
+        body: {
+          meetingId: selectedItemId,
+          meetingTitle: itemData.title,
+          meetingDate: itemData.dateTime,
+          attendees: itemData.attendees || [],
+          notesContent: existingNotes,
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      setExtractedTasks(selectedItemId, data.extractedTasks || []);
+      
+      if (data.extractedTasks?.length > 0) {
+        toast({
+          title: "Tasks Extracted",
+          description: `Found ${data.extractedTasks.length} action item${data.extractedTasks.length !== 1 ? 's' : ''} in the meeting notes.`,
+        });
+      } else {
+        toast({
+          title: "No Tasks Found",
+          description: "No clear action items were found in the meeting notes.",
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      console.error('Error extracting tasks:', error);
+      const message = error instanceof Error ? error.message : 'Failed to extract tasks';
+      setExtractionError(message);
+      toast({
+        title: "Extraction Failed",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const handleSelectionChange = (taskId: string, selected: boolean) => {
+    if (selectedItemId) {
+      updateExtractedTaskSelection(selectedItemId, taskId, selected);
+    }
+  };
+
+  const handleAddTasks = async (tasks: ExtractedTask[]) => {
+    if (!selectedItemId) return;
+    
+    setIsAddingTasks(true);
+    try {
+      addTasksFromMeeting(selectedItemId, itemData.title, tasks);
+      toast({
+        title: "Tasks Added",
+        description: `Added ${tasks.length} task${tasks.length !== 1 ? 's' : ''} to your task list.`,
+      });
+    } finally {
+      setIsAddingTasks(false);
+    }
+  };
+
   const handleOpenDocReview = () => {
     window.open("https://app.wavepitch.ai/app/review", "_blank");
   };
 
   const handleGetAIFeedback = () => {
-    // For now, open the same review tool
     window.open("https://app.wavepitch.ai/app/review", "_blank");
   };
 
@@ -292,19 +399,47 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
         </div>
       </div>
 
-      {/* Notes */}
-      <div>
-        <label className="text-sm font-medium text-gray-700 block mb-2">
-          Notes
-        </label>
-        <textarea
-          className="w-full rounded-lg border border-gray-200 p-3 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          rows={3}
-          placeholder="Add notes..."
-          defaultValue={itemData.notes}
-          key={`notes-${selectedItemId}`}
-        />
-      </div>
+      {/* Meeting Notes Dropzone - Only show for meetings */}
+      {isMeeting && (
+        <div className="space-y-4">
+          <MeetingNotesDropzone
+            meetingId={selectedItemId}
+            meetingTitle={itemData.title}
+            existingNotes={existingNotes}
+            onNotesReceived={handleNotesReceived}
+            onExtractTasks={handleExtractTasks}
+            isProcessing={meetingNotes.isExtracting}
+            extractedCount={extractedTasks.filter(t => t.selected).length}
+          />
+
+          {/* Extracted Tasks Review */}
+          {extractedTasks.length > 0 && (
+            <ExtractedTasksReview
+              tasks={extractedTasks}
+              onSelectionChange={handleSelectionChange}
+              onAddTasks={handleAddTasks}
+              isAdding={isAddingTasks}
+              meetingTitle={itemData.title}
+            />
+          )}
+        </div>
+      )}
+
+      {/* Notes - Only show for non-meetings */}
+      {!isMeeting && (
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-2">
+            Notes
+          </label>
+          <textarea
+            className="w-full rounded-lg border border-gray-200 p-3 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows={3}
+            placeholder="Add notes..."
+            defaultValue={itemData.notes}
+            key={`notes-${selectedItemId}`}
+          />
+        </div>
+      )}
 
       {/* Review Doc Modal */}
       <Dialog open={reviewDocOpen} onOpenChange={setReviewDocOpen}>

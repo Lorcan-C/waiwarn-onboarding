@@ -2,6 +2,8 @@ export type ProjectStage = 'frame' | 'plan' | 'draft' | 'update' | 'deliver';
 
 export type POVType = 'purpose' | 'process' | 'product' | 'iteration';
 
+export type TaskSource = 'manual' | 'meeting';
+
 export interface StageInfo {
   completed: boolean;
   completedAt?: string;
@@ -23,6 +25,34 @@ export interface Project {
   description: string;
   stakeholders: Stakeholder[];
   notes: string;
+}
+
+export interface MeetingNotes {
+  content: string;
+  uploadedAt: string;
+  fileName?: string;
+}
+
+export interface ExtractedTask {
+  id: string;
+  title: string;
+  description?: string;
+  suggestedAssignee?: string;
+  suggestedDueDate?: string;
+  confidence: number;
+  selected: boolean;
+}
+
+export interface Task {
+  id: string;
+  title: string;
+  dueDate: string;
+  priority: 'high' | 'medium' | 'low';
+  completed: boolean;
+  source: TaskSource;
+  meetingId?: string;
+  meetingTitle?: string;
+  assignee?: string;
 }
 
 export const STAGES: ProjectStage[] = ['frame', 'plan', 'draft', 'update', 'deliver'];
