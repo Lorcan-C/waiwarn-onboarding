@@ -20,12 +20,9 @@ interface MeetingNotesState {
 interface LayoutState {
   left: ColumnState;
   right: ColumnState;
-  rightPanelOpen: boolean;
   meetingNotes: MeetingNotesState;
   meetingTasks: Task[];
   setActiveView: (column: "left" | "right", view: ViewType) => void;
-  toggleRightPanel: () => void;
-  setRightPanelOpen: (open: boolean) => void;
   handleItemClick: (
     fromColumn: "left" | "right",
     itemId: string,
@@ -46,9 +43,8 @@ export const useLayoutStore = create<LayoutState>((set) => ({
     activeView: "calendar",
   },
   right: {
-    activeView: "detail",
+    activeView: "tasks",
   },
-  rightPanelOpen: false,
   meetingNotes: {
     notesByMeetingId: {},
     extractedTasksByMeetingId: {},
@@ -60,10 +56,6 @@ export const useLayoutStore = create<LayoutState>((set) => ({
     set((state) => ({
       [column]: { ...state[column], activeView: view },
     })),
-  toggleRightPanel: () =>
-    set((state) => ({ rightPanelOpen: !state.rightPanelOpen })),
-  setRightPanelOpen: (open) =>
-    set({ rightPanelOpen: open }),
   handleItemClick: (fromColumn, itemId, itemType, projectStage) =>
     set((state) => {
       const targetColumn = fromColumn === "left" ? "right" : "left";
@@ -78,7 +70,6 @@ export const useLayoutStore = create<LayoutState>((set) => ({
       }
 
       return {
-        rightPanelOpen: true,
         [targetColumn]: {
           ...state[targetColumn],
           activeView: targetView,
