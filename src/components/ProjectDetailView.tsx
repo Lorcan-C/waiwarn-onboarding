@@ -42,7 +42,7 @@ interface OutputDocument {
 // Task data for lookup with full details
 const taskData: Record<string, ItemDetail> = {
   "1": {
-    title: "Review Q2 proposal draft",
+    title: "Review partner meeting deck on Series A deal",
     currentStage: 'draft',
     stages: {
       plan: { completed: true, completedAt: '2024-01-12', aiAssisted: true },
@@ -50,16 +50,17 @@ const taskData: Record<string, ItemDetail> = {
       update: { completed: false },
       deliver: { completed: false }
     },
-    description: "Review and finalize the Q2 proposal draft. Key deliverables include executive summary, budget breakdown, and timeline.",
+    description: "Review the partner meeting presentation for an upcoming Series A investment opportunity. Focus on market analysis, competitive landscape, and financial projections.",
     stakeholders: [
-      { id: "1", name: "Sarah Chen", role: "Product Manager", initials: "SC" },
-      { id: "2", name: "Mike Johnson", role: "Engineering Lead", initials: "MJ" },
+      { id: "1", name: "David Chen", role: "Managing Partner", initials: "DC" },
+      { id: "2", name: "Rachel Kim", role: "Investment Associate", initials: "RK" },
+      { id: "3", name: "Marcus Webb", role: "Portfolio Analyst", initials: "MW" },
     ],
-    notes: "Awaiting feedback from finance team on budget section.",
-    workplan: "1. Review executive summary\n2. Check budget breakdown\n3. Validate timeline with stakeholders",
+    notes: "Key focus areas: TAM/SAM analysis, unit economics, and founder background check.",
+    workplan: "1. Research target company background\n2. Analyze financial model and projections\n3. Prepare questions for partner discussion",
   },
   "2": {
-    title: "Prepare meeting notes",
+    title: "Complete compliance training module",
     currentStage: 'update',
     stages: {
       plan: { completed: true, completedAt: '2024-01-09', aiAssisted: true },
@@ -67,15 +68,16 @@ const taskData: Record<string, ItemDetail> = {
       update: { completed: false },
       deliver: { completed: false }
     },
-    description: "Compile and format notes from last week's strategy meetings. Include action items and deadlines.",
+    description: "Complete mandatory compliance training covering SEC regulations, insider trading policies, and confidentiality requirements for investment professionals.",
     stakeholders: [
-      { id: "3", name: "Lisa Park", role: "Design Lead", initials: "LP" },
+      { id: "4", name: "Jennifer Walsh", role: "Chief Compliance Officer", initials: "JW" },
+      { id: "5", name: "Thomas Rivera", role: "HR Director", initials: "TR" },
     ],
-    notes: "Check recording for exact quotes from stakeholders.",
-    workplan: "1. Gather all meeting recordings\n2. Extract key discussion points\n3. Compile action items list",
+    notes: "Training must be completed before accessing deal flow materials.",
+    workplan: "1. Complete SEC regulations module\n2. Review insider trading policies\n3. Sign confidentiality agreements",
   },
   "3": {
-    title: "Update stakeholder map",
+    title: "Set up portfolio company CRM access",
     currentStage: 'plan',
     stages: {
       plan: { completed: false, aiAssisted: true },
@@ -83,17 +85,17 @@ const taskData: Record<string, ItemDetail> = {
       update: { completed: false },
       deliver: { completed: false }
     },
-    description: "Map out key stakeholders for the new product initiative. Identify decision-makers and influencers.",
+    description: "Get access to the firm's CRM system for tracking portfolio companies, deal pipeline, and investor communications.",
     stakeholders: [
-      { id: "1", name: "Sarah Chen", role: "Product Manager", initials: "SC" },
-      { id: "4", name: "Tom Wilson", role: "VP of Sales", initials: "TW" },
-      { id: "5", name: "Amy Roberts", role: "Customer Success", initials: "AR" },
+      { id: "6", name: "Kevin O'Brien", role: "IT Director", initials: "KO" },
+      { id: "7", name: "Priya Patel", role: "Portfolio Operations Lead", initials: "PP" },
+      { id: "2", name: "Rachel Kim", role: "Investment Associate", initials: "RK" },
     ],
-    notes: "",
-    workplan: "1. Research org structure\n2. Identify key decision makers\n3. Map relationships and influence",
+    notes: "Request read-only access initially, write access after 30 days.",
+    workplan: "1. Submit access request to IT\n2. Complete CRM training session\n3. Review current portfolio company profiles",
   },
   "4": {
-    title: "Read onboarding docs",
+    title: "Read fund thesis and investment memo templates",
     currentStage: 'plan',
     stages: {
       plan: { completed: false, aiAssisted: true },
@@ -101,15 +103,16 @@ const taskData: Record<string, ItemDetail> = {
       update: { completed: false },
       deliver: { completed: false }
     },
-    description: "Go through company onboarding documentation including policies, tools setup, and team introductions.",
+    description: "Study the fund's investment thesis, sector focus areas, and standard investment memo templates used for deal evaluation.",
     stakeholders: [
-      { id: "6", name: "HR Team", role: "Human Resources", initials: "HR" },
+      { id: "1", name: "David Chen", role: "Managing Partner", initials: "DC" },
+      { id: "8", name: "Alex Torres", role: "Senior Associate", initials: "AT" },
     ],
-    notes: "Complete by end of first week. Reach out to IT if any access issues.",
-    workplan: "1. Read company handbook\n2. Complete IT setup\n3. Review team structure docs",
+    notes: "Review at least 3 past investment memos as examples.",
+    workplan: "1. Read fund thesis document\n2. Review 3 sample investment memos\n3. Note questions for mentor discussion",
   },
   "5": {
-    title: "Schedule 1:1 with mentor",
+    title: "Schedule 1:1 with managing partner",
     currentStage: 'deliver',
     stages: {
       plan: { completed: true, completedAt: '2024-01-03', aiAssisted: true },
@@ -117,12 +120,14 @@ const taskData: Record<string, ItemDetail> = {
       update: { completed: true, completedAt: '2024-01-05' },
       deliver: { completed: false }
     },
-    description: "Set up recurring 1:1 meeting with assigned mentor. Discuss goals and expectations for mentorship.",
+    description: "Set up introductory 1:1 meeting with the managing partner to discuss role expectations, learning goals, and career development path.",
     stakeholders: [
-      { id: "7", name: "David Lee", role: "Senior Engineer", initials: "DL" },
+      { id: "1", name: "David Chen", role: "Managing Partner", initials: "DC" },
+      { id: "9", name: "Michelle Scott", role: "Executive Assistant", initials: "MS" },
+      { id: "5", name: "Thomas Rivera", role: "HR Director", initials: "TR" },
     ],
-    notes: "Check mentor's calendar availability for weekly slots.",
-    workplan: "1. Review mentor's calendar\n2. Propose meeting times\n3. Prepare discussion topics",
+    notes: "Prepare 3-5 questions about the firm's investment philosophy and your role.",
+    workplan: "1. Check partner's calendar availability\n2. Prepare discussion topics and questions\n3. Send calendar invite with agenda",
   },
 };
 
