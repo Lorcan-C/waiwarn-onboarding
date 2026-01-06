@@ -1,5 +1,6 @@
 import { useState } from "react";
 import CalendarView from "@/components/CalendarView";
+import TasksView from "@/components/TasksView";
 
 const Index = () => {
   const [leftTab, setLeftTab] = useState<"calendar" | "tasks" | "goals">("calendar");
@@ -74,9 +75,7 @@ const Index = () => {
               {/* Left Content Area */}
               <div className="flex-1 overflow-y-auto p-6">
                 {leftTab === "calendar" && <CalendarView />}
-                {leftTab === "tasks" && (
-                  <p className="text-gray-500">Tasks View</p>
-                )}
+                {leftTab === "tasks" && <TasksView />}
                 {leftTab === "goals" && (
                   <p className="text-gray-500">Goals View</p>
                 )}
