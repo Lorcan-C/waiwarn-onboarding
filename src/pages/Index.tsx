@@ -2,6 +2,8 @@ import { useState } from "react";
 import { HelpCircle, CheckCircle2, Sun, Settings } from "lucide-react";
 import TwoColumnLayout from "@/components/TwoColumnLayout";
 import CheckInModal from "@/components/CheckInModal";
+import CheckOutModal from "@/components/CheckOutModal";
+import UnstuckModal from "@/components/UnstuckModal";
 import OnboardingSetupView from "@/components/OnboardingSetupView";
 import {
   Dialog,
@@ -79,67 +81,16 @@ const Index = () => {
       </div>
 
       {/* Stuck Modal */}
-      <Dialog open={stuckModalOpen} onOpenChange={setStuckModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Need help?</DialogTitle>
-            <DialogDescription>
-              Tell us what you're stuck on and we'll help you get back on track.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <textarea
-              className="w-full rounded-lg border border-gray-200 p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={4}
-              placeholder="Describe what you're having trouble with..."
-            />
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setStuckModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-              Get Help
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <UnstuckModal
+        isOpen={stuckModalOpen}
+        onClose={() => setStuckModalOpen(false)}
+      />
 
       {/* Checkout Modal */}
-      <Dialog open={checkoutModalOpen} onOpenChange={setCheckoutModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Check out for today</DialogTitle>
-            <DialogDescription>
-              Ready to wrap up? Let's review what you accomplished today.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4 space-y-3">
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <p className="text-sm font-medium text-gray-700">Today's Summary</p>
-              <p className="text-sm text-gray-500 mt-1">3 tasks completed • 2 meetings attended</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-2">
-                Any notes for tomorrow?
-              </label>
-              <textarea
-                className="w-full rounded-lg border border-gray-200 p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows={3}
-                placeholder="Optional notes..."
-              />
-            </div>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setCheckoutModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-              Check Out
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CheckOutModal
+        isOpen={checkoutModalOpen}
+        onClose={() => setCheckoutModalOpen(false)}
+      />
 
       {/* Check-In Modal */}
       <CheckInModal
