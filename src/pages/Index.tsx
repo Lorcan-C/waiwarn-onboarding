@@ -7,6 +7,7 @@ import UnstuckModal from "@/components/UnstuckModal";
 import WelcomeModal from "@/components/WelcomeModal";
 import OnboardingSetupView from "@/components/OnboardingSetupView";
 import waiwarnLogo from "@/assets/waiwarn-logo.png";
+import forestBackground from "@/assets/forest_v3.webp";
 import {
   Dialog,
   DialogContent,
@@ -36,8 +37,11 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-slate-100 overflow-auto relative">
       {/* Background Layer */}
       <div
-        className="absolute inset-0 bg-gradient-to-br from-slate-200 to-slate-300"
-        style={{ opacity: 0.5 }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: `url(${forestBackground})`,
+          opacity: 0.5 
+        }}
       />
 
       {/* Content Layer */}
