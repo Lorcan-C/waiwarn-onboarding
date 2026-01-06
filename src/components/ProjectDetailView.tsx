@@ -328,67 +328,69 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
   return (
     <div className="space-y-6">
       {/* Header with Inline Editable Title, Description, and Action Buttons */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          {/* Editable Title */}
-          {isEditingTitle ? (
-            <input
-              type="text"
-              value={titleValue}
-              onChange={(e) => setTitleValue(e.target.value)}
-              onBlur={() => setIsEditingTitle(false)}
-              onKeyDown={(e) => e.key === 'Enter' && setIsEditingTitle(false)}
-              autoFocus
-              className="text-xl font-semibold text-gray-900 w-full bg-white border border-blue-500 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          ) : (
-            <h2 
-              onClick={() => setIsEditingTitle(true)}
-              className="text-xl font-semibold text-gray-900 cursor-text hover:bg-gray-100 rounded px-2 py-1 -mx-2 transition-colors"
+      <div className="space-y-3">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            {/* Editable Title */}
+            {isEditingTitle ? (
+              <input
+                type="text"
+                value={titleValue}
+                onChange={(e) => setTitleValue(e.target.value)}
+                onBlur={() => setIsEditingTitle(false)}
+                onKeyDown={(e) => e.key === 'Enter' && setIsEditingTitle(false)}
+                autoFocus
+                className="text-xl font-semibold text-gray-900 w-full bg-white border border-blue-500 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            ) : (
+              <h2 
+                onClick={() => setIsEditingTitle(true)}
+                className="text-xl font-semibold text-gray-900 cursor-text hover:bg-gray-100 rounded px-2 py-1 -mx-2 transition-colors"
+              >
+                {titleValue}
+              </h2>
+            )}
+          </div>
+          <div className="flex gap-2 flex-shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setReviewDocOpen(true)}
+              className="text-xs"
             >
-              {titleValue}
-            </h2>
-          )}
-          
-          {/* Editable Description/Notes (combined) */}
-          {isEditingDescription ? (
-            <textarea
-              value={descriptionValue}
-              onChange={(e) => setDescriptionValue(e.target.value)}
-              onBlur={() => setIsEditingDescription(false)}
-              autoFocus
-              rows={3}
-              className="mt-2 w-full text-sm text-gray-600 bg-white border border-blue-500 rounded px-2 py-1 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          ) : (
-            <p 
-              onClick={() => setIsEditingDescription(true)}
-              className="text-sm text-gray-600 mt-2 cursor-text hover:bg-gray-100 rounded px-2 py-1 -mx-2 transition-colors whitespace-pre-line"
+              <FileText className="w-3 h-3 mr-1" />
+              Review Doc
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setBrainstormOpen(true)}
+              className="text-xs"
             >
-              {descriptionValue || 'Add description...'}
-            </p>
-          )}
+              <MessageSquare className="w-3 h-3 mr-1" />
+              Start Brainstorm
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2 flex-shrink-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setReviewDocOpen(true)}
-            className="text-xs"
+        
+        {/* Editable Description/Notes - Full Width */}
+        {isEditingDescription ? (
+          <textarea
+            value={descriptionValue}
+            onChange={(e) => setDescriptionValue(e.target.value)}
+            onBlur={() => setIsEditingDescription(false)}
+            autoFocus
+            rows={3}
+            className="w-full text-sm text-gray-600 bg-white border border-blue-500 rounded px-2 py-1 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        ) : (
+          <p 
+            onClick={() => setIsEditingDescription(true)}
+            className="text-sm text-gray-600 cursor-text hover:bg-gray-100 rounded px-2 py-1 -mx-2 transition-colors whitespace-pre-line"
           >
-            <FileText className="w-3 h-3 mr-1" />
-            Review Doc
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setBrainstormOpen(true)}
-            className="text-xs"
-          >
-            <MessageSquare className="w-3 h-3 mr-1" />
-            Start Brainstorm
-          </Button>
-        </div>
+            {descriptionValue || 'Add description...'}
+          </p>
+        )}
       </div>
 
       {/* Stage Indicator - Only show for tasks */}
