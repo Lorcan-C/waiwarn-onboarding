@@ -4,6 +4,7 @@ import CalendarView from "@/components/CalendarView";
 import TasksView from "@/components/TasksView";
 import ProjectDetailView from "@/components/ProjectDetailView";
 import CheckInModal from "@/components/CheckInModal";
+import OnboardingSetupView from "@/components/OnboardingSetupView";
 import {
   Dialog,
   DialogContent,
@@ -147,9 +148,7 @@ const Index = () => {
                 {rightTab === "tasks" && (
                   <p className="text-gray-500">Tasks View</p>
                 )}
-                {rightTab === "povs" && (
-                  <p className="text-gray-500">POVs View</p>
-                )}
+                {rightTab === "povs" && <OnboardingSetupView />}
                 {rightTab === "detail" && (
                   selectedTaskId ? (
                     <ProjectDetailView
