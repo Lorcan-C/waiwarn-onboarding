@@ -20,9 +20,11 @@ interface MeetingNotesState {
 interface LayoutState {
   left: ColumnState;
   right: ColumnState;
+  rightPanelOpen: boolean;
   meetingNotes: MeetingNotesState;
   meetingTasks: Task[];
   setActiveView: (column: "left" | "right", view: ViewType) => void;
+  setRightPanelOpen: (open: boolean) => void;
   handleItemClick: (
     fromColumn: "left" | "right",
     itemId: string,
@@ -43,8 +45,9 @@ export const useLayoutStore = create<LayoutState>((set) => ({
     activeView: "calendar",
   },
   right: {
-    activeView: "tasks",
+    activeView: "detail",
   },
+  rightPanelOpen: false,
   meetingNotes: {
     notesByMeetingId: {},
     extractedTasksByMeetingId: {},
@@ -56,23 +59,14 @@ export const useLayoutStore = create<LayoutState>((set) => ({
     set((state) => ({
       [column]: { ...state[column], activeView: view },
     })),
+  setRightPanelOpen: (open) => set({ rightPanelOpen: open }),
   handleItemClick: (fromColumn, itemId, itemType, projectStage) =>
     set((state) => {
-      const targetColumn = fromColumn === "left" ? "right" : "left";
-      
-      let targetView: ViewType = "detail";
-      if (itemType === "meeting") {
-        targetView = "detail";
-      } else if (itemType === "task") {
-        targetView = "detail";
-      } else if (itemType === "goal") {
-        targetView = "detail";
-      }
-
       return {
-        [targetColumn]: {
-          ...state[targetColumn],
-          activeView: targetView,
+        rightPanelOpen: true,
+        right: {
+          ...state.right,
+          activeView: "detail",
           selectedItemId: itemId,
           selectedItemType: itemType,
           currentProjectStage: projectStage,
