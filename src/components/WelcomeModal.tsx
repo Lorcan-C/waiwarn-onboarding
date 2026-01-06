@@ -6,6 +6,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import wavepitchLogo from "@/assets/wavepitch-logo.png";
 
 interface WelcomeModalProps {
   isOpen: boolean;
@@ -18,7 +19,14 @@ const WelcomeModal = ({ isOpen, onClose, onStartCheckIn }: WelcomeModalProps) =>
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-md">
         <DialogHeader className="text-center sm:text-center">
-          <DialogTitle className="text-2xl">Welcome to WAIWARN</DialogTitle>
+          <div className="flex justify-center mb-4">
+            <img 
+              src={wavepitchLogo} 
+              alt="Wavepitch" 
+              className="h-12 w-auto"
+            />
+          </div>
+          <DialogTitle className="text-2xl">Welcome to Wavepitch</DialogTitle>
           <DialogDescription className="text-base">
             Your guide for the first 90 days. We help you stay on top of what matters.
           </DialogDescription>
