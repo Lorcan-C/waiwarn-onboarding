@@ -19,11 +19,11 @@ interface LocalTask {
 }
 
 const sampleTasks: LocalTask[] = [
-  { id: "1", title: "Review Q2 proposal draft", dueDate: "Due today", priority: "high", completed: false, source: "manual" },
-  { id: "2", title: "Prepare meeting notes", dueDate: "Due today", priority: "medium", completed: false, source: "manual" },
-  { id: "3", title: "Update stakeholder map", dueDate: "Due tomorrow", priority: "high", completed: false, source: "manual" },
-  { id: "4", title: "Read onboarding docs", dueDate: "Due this week", priority: "low", completed: false, source: "manual" },
-  { id: "5", title: "Schedule 1:1 with mentor", dueDate: "Due this week", priority: "medium", completed: false, source: "manual" },
+  { id: "1", title: "Review partner meeting deck on Series A deal", dueDate: "Due today", priority: "high", completed: false, source: "manual" },
+  { id: "2", title: "Complete compliance training module", dueDate: "Due today", priority: "medium", completed: false, source: "manual" },
+  { id: "3", title: "Set up portfolio company CRM access", dueDate: "Due tomorrow", priority: "high", completed: false, source: "manual" },
+  { id: "4", title: "Read fund thesis and investment memo templates", dueDate: "Due Friday", priority: "low", completed: false, source: "manual" },
+  { id: "5", title: "Schedule 1:1 with managing partner", dueDate: "Due Friday", priority: "medium", completed: false, source: "manual" },
 ];
 
 const priorityColors: Record<Priority, string> = {
@@ -38,7 +38,7 @@ interface TasksViewProps {
 }
 
 const TasksView = ({ column, onItemClick }: TasksViewProps) => {
-  const headerText = column === "right" ? "Today's onboarding tasks" : "Today's Tasks";
+  const headerText = "Today's onboarding tasks";
   const [priorityFilter, setPriorityFilter] = useState<"all" | Priority>("all");
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const [tasks, setTasks] = useState<LocalTask[]>(sampleTasks);
