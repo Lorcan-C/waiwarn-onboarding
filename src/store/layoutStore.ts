@@ -43,7 +43,7 @@ export const useLayoutStore = create<LayoutState>((set) => ({
     activeView: "tasks",
   },
   right: {
-    activeView: "tasks",
+    activeView: "detail",
   },
   meetingNotes: {
     notesByMeetingId: {},

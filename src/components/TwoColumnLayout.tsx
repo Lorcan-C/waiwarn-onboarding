@@ -114,7 +114,7 @@ const leftTabs: { id: ViewType; label: string }[] = [
 ];
 
 const rightTabs: { id: ViewType; label: string }[] = [
-  { id: "tasks", label: "Task details" },
+  { id: "detail", label: "Task details" },
   { id: "povs", label: "Key perspectives" },
 ];
 
