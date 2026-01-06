@@ -26,10 +26,11 @@ const priorityColors: Record<Priority, string> = {
 };
 
 interface TasksViewProps {
-  onTaskClick?: (taskId: string) => void;
+  column: "left" | "right";
+  onItemClick: (itemId: string, itemType: string) => void;
 }
 
-const TasksView = ({ onTaskClick }: TasksViewProps) => {
+const TasksView = ({ column, onItemClick }: TasksViewProps) => {
   const [filter, setFilter] = useState<"all" | Priority>("all");
   const [tasks, setTasks] = useState(sampleTasks);
 
@@ -47,10 +48,7 @@ const TasksView = ({ onTaskClick }: TasksViewProps) => {
   };
 
   const handleTaskClick = (taskId: string) => {
-    if (onTaskClick) {
-      onTaskClick(taskId);
-    }
-    console.log("Task clicked:", taskId);
+    onItemClick(taskId, "task");
   };
 
   return (
