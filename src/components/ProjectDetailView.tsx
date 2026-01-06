@@ -201,6 +201,7 @@ interface ProjectDetailViewProps {
 const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemType }: ProjectDetailViewProps) => {
   const [reviewDocOpen, setReviewDocOpen] = useState(false);
   const [brainstormOpen, setBrainstormOpen] = useState(false);
+  const [planFeedbackOpen, setPlanFeedbackOpen] = useState(false);
   const [isAddingTasks, setIsAddingTasks] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -477,10 +478,10 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
             <Button
               variant="outline"
               size="sm"
-              onClick={() => window.open("https://app.wavepitch.ai/app/review", "_blank")}
+              onClick={() => setPlanFeedbackOpen(true)}
               className="text-xs"
             >
-              <FileText className="w-3 h-3 mr-1" />
+              <MessageSquare className="w-3 h-3 mr-1" />
               Get virtual feedback on plan
             </Button>
           </div>
@@ -658,6 +659,35 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
             <Button asChild>
               <a href="https://app.wavepitch.ai/app/create" target="_blank" rel="noopener noreferrer">
                 Start Call
+              </a>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Virtual Plan Feedback Modal */}
+      <Dialog open={planFeedbackOpen} onOpenChange={setPlanFeedbackOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-blue-600" />
+              Get virtual feedback on plan
+            </DialogTitle>
+            <DialogDescription>
+              Receiving feedback from multiple perspectives on your plan.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-gray-600">
+              This feature provides comments and proposed edits to your plan based on your 
+              company knowledge base, key stakeholders perspectives, and recent meeting notes. 
+              This helps identify gaps, risks, and opportunities before moving forward with execution.
+            </p>
+          </div>
+          <div className="flex justify-end">
+            <Button asChild>
+              <a href="https://app.wavepitch.ai/app/create" target="_blank" rel="noopener noreferrer">
+                Get Feedback
               </a>
             </Button>
           </div>
