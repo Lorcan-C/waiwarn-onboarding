@@ -70,7 +70,7 @@ const Index = () => {
         {/* Header with Logo and Check-in Button */}
         <div className="h-10 flex items-center justify-between w-full max-w-[1120px] mb-8">
           <div className="text-2xl font-bold tracking-tight text-slate-800">
-            WAIWARN
+            What Am I Working on Right Now <span className="text-blue-600">(WAIWARN)</span>
           </div>
           <Button
             onClick={() => setCheckInModalOpen(true)}
