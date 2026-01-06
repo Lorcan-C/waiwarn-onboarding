@@ -9,20 +9,103 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-// Task data for lookup
-const taskData: Record<string, { title: string }> = {
-  "1": { title: "Review Q2 proposal draft" },
-  "2": { title: "Prepare meeting notes" },
-  "3": { title: "Update stakeholder map" },
-  "4": { title: "Read onboarding docs" },
-  "5": { title: "Schedule 1:1 with mentor" },
+interface Stakeholder {
+  id: string;
+  name: string;
+  role: string;
+  initials: string;
+}
+
+interface ItemDetail {
+  title: string;
+  stage: number;
+  description: string;
+  stakeholders: Stakeholder[];
+  notes: string;
+}
+
+// Task data for lookup with full details
+const taskData: Record<string, ItemDetail> = {
+  "1": {
+    title: "Review Q2 proposal draft",
+    stage: 2, // Draft
+    description: "Review and finalize the Q2 proposal draft. Key deliverables include executive summary, budget breakdown, and timeline.",
+    stakeholders: [
+      { id: "1", name: "Sarah Chen", role: "Product Manager", initials: "SC" },
+      { id: "2", name: "Mike Johnson", role: "Engineering Lead", initials: "MJ" },
+    ],
+    notes: "Awaiting feedback from finance team on budget section.",
+  },
+  "2": {
+    title: "Prepare meeting notes",
+    stage: 3, // Review
+    description: "Compile and format notes from last week's strategy meetings. Include action items and deadlines.",
+    stakeholders: [
+      { id: "3", name: "Lisa Park", role: "Design Lead", initials: "LP" },
+    ],
+    notes: "Check recording for exact quotes from stakeholders.",
+  },
+  "3": {
+    title: "Update stakeholder map",
+    stage: 0, // Ready
+    description: "Map out key stakeholders for the new product initiative. Identify decision-makers and influencers.",
+    stakeholders: [
+      { id: "1", name: "Sarah Chen", role: "Product Manager", initials: "SC" },
+      { id: "4", name: "Tom Wilson", role: "VP of Sales", initials: "TW" },
+      { id: "5", name: "Amy Roberts", role: "Customer Success", initials: "AR" },
+    ],
+    notes: "",
+  },
+  "4": {
+    title: "Read onboarding docs",
+    stage: 1, // Frame
+    description: "Go through company onboarding documentation including policies, tools setup, and team introductions.",
+    stakeholders: [
+      { id: "6", name: "HR Team", role: "Human Resources", initials: "HR" },
+    ],
+    notes: "Complete by end of first week. Reach out to IT if any access issues.",
+  },
+  "5": {
+    title: "Schedule 1:1 with mentor",
+    stage: 0, // Ready
+    description: "Set up recurring 1:1 meeting with assigned mentor. Discuss goals and expectations for mentorship.",
+    stakeholders: [
+      { id: "7", name: "David Lee", role: "Senior Engineer", initials: "DL" },
+    ],
+    notes: "Check mentor's calendar availability for weekly slots.",
+  },
 };
 
-// Meeting data for lookup
-const meetingData: Record<string, { title: string }> = {
-  "1": { title: "Team Standup" },
-  "2": { title: "Client Call" },
-  "3": { title: "1:1 with Manager" },
+// Meeting data for lookup with full details
+const meetingData: Record<string, ItemDetail> = {
+  "1": {
+    title: "Team Standup",
+    stage: 4, // Deliver
+    description: "Daily team sync to share progress, blockers, and plans for the day. Keep updates brief and focused.",
+    stakeholders: [
+      { id: "8", name: "Engineering Team", role: "Development", initials: "ET" },
+    ],
+    notes: "Prepare yesterday's accomplishments and today's focus areas.",
+  },
+  "2": {
+    title: "Client Call",
+    stage: 2, // Draft
+    description: "Quarterly review call with Acme Corp. Discuss project progress, upcoming milestones, and any concerns.",
+    stakeholders: [
+      { id: "9", name: "John Smith", role: "Account Manager", initials: "JS" },
+      { id: "10", name: "Emily Brown", role: "Client Lead (Acme)", initials: "EB" },
+    ],
+    notes: "Review latest metrics before call. Prepare demo of new features.",
+  },
+  "3": {
+    title: "1:1 with Manager",
+    stage: 1, // Frame
+    description: "Weekly sync to discuss progress, blockers, and career development. Open forum for feedback and questions.",
+    stakeholders: [
+      { id: "11", name: "Your Manager", role: "Direct Manager", initials: "YM" },
+    ],
+    notes: "Bring list of accomplishments this week. Prepare questions about upcoming project.",
+  },
 };
 
 interface ProjectDetailViewProps {
@@ -34,30 +117,26 @@ interface ProjectDetailViewProps {
 
 const stages = ["Ready", "Frame", "Draft", "Review", "Deliver"];
 
-const sampleStakeholders = [
-  { id: "1", name: "Sarah Chen", role: "Product Manager", initials: "SC" },
-  { id: "2", name: "Mike Johnson", role: "Engineering Lead", initials: "MJ" },
-  { id: "3", name: "Lisa Park", role: "Design Lead", initials: "LP" },
-];
-
 const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemType }: ProjectDetailViewProps) => {
   const [reviewDocOpen, setReviewDocOpen] = useState(false);
   const [brainstormOpen, setBrainstormOpen] = useState(false);
-  const currentStageIndex = 1; // Frame stage for demo
 
-  // Get title based on item type
-  const getTitle = () => {
-    if (!selectedItemId) return "Select an item";
+  // Get item data based on type
+  const getItemData = (): ItemDetail | null => {
+    if (!selectedItemId) return null;
     if (selectedItemType === "task") {
-      return taskData[selectedItemId]?.title || "Unknown Task";
+      return taskData[selectedItemId] || null;
     }
     if (selectedItemType === "meeting") {
-      return meetingData[selectedItemId]?.title || "Unknown Meeting";
+      return meetingData[selectedItemId] || null;
     }
-    return "Unknown Item";
+    return null;
   };
 
-  if (!selectedItemId) {
+  const itemData = getItemData();
+  const currentStageIndex = itemData?.stage ?? 1;
+
+  if (!selectedItemId || !itemData) {
     return (
       <div className="flex items-center justify-center h-full">
         <p className="text-gray-500">Select an item to view details</p>
@@ -70,7 +149,7 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
       {/* Header with Title and Action Buttons */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">{getTitle()}</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{itemData.title}</h2>
           <p className="text-sm text-gray-500 mt-1">
             {selectedItemType === "task" ? "Task" : "Meeting"} ID: {selectedItemId}
           </p>
@@ -135,7 +214,8 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
           className="w-full rounded-lg border border-gray-200 p-3 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           rows={4}
           placeholder="Add project description..."
-          defaultValue="This task involves reviewing and finalizing the Q2 proposal draft. Key deliverables include executive summary, budget breakdown, and timeline."
+          defaultValue={itemData.description}
+          key={`desc-${selectedItemId}`}
         />
       </div>
 
@@ -143,22 +223,26 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
       <div>
         <p className="text-sm font-medium text-gray-700 mb-3">Stakeholders</p>
         <div className="space-y-2">
-          {sampleStakeholders.map((stakeholder) => (
-            <div
-              key={stakeholder.id}
-              className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-600">
-                {stakeholder.initials}
+          {itemData.stakeholders.length > 0 ? (
+            itemData.stakeholders.map((stakeholder) => (
+              <div
+                key={stakeholder.id}
+                className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-600">
+                  {stakeholder.initials}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">
+                    {stakeholder.name}
+                  </p>
+                  <p className="text-xs text-gray-500">{stakeholder.role}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">
-                  {stakeholder.name}
-                </p>
-                <p className="text-xs text-gray-500">{stakeholder.role}</p>
-              </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="text-sm text-gray-400">No stakeholders assigned</p>
+          )}
         </div>
       </div>
 
@@ -171,7 +255,8 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
           className="w-full rounded-lg border border-gray-200 p-3 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           rows={3}
           placeholder="Add notes..."
-          defaultValue="Awaiting feedback from finance team on budget section."
+          defaultValue={itemData.notes}
+          key={`notes-${selectedItemId}`}
         />
       </div>
 

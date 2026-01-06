@@ -32,8 +32,8 @@ const Index = () => {
       {/* Content Layer */}
       <div className="relative z-10 flex flex-col items-center min-h-screen py-8 px-6">
         {/* Header with Logo and Check-in Button */}
-        <div className="h-10 flex items-center justify-between w-full max-w-[1120px] mb-8">
-          <img src={waiwarnLogo} alt="What Am I Working On Right Now" className="h-10" />
+        <div className="h-20 flex items-center justify-between w-full max-w-[1120px] mb-8">
+          <img src={waiwarnLogo} alt="What Am I Working On Right Now" className="h-20" />
           <div className="flex gap-2">
             <Button
               variant="outline"
