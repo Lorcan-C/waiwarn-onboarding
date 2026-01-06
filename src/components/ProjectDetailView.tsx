@@ -433,8 +433,19 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
 
       {/* 3. Key Stakeholders */}
       <div>
-        <p className="text-sm font-medium text-gray-700 mb-3">Key stakeholders</p>
-        <div className="space-y-2 mb-3">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-medium text-gray-700">Key stakeholders</p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setBrainstormOpen(true)}
+            className="text-xs"
+          >
+            <Users className="w-3 h-3 mr-1" />
+            Start virtual call with stakeholders
+          </Button>
+        </div>
+        <div className="space-y-2">
           {itemData.stakeholders.length > 0 ? (
             itemData.stakeholders.map((stakeholder) => (
               <div
@@ -456,15 +467,6 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
             <p className="text-sm text-gray-400">No stakeholders assigned</p>
           )}
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setBrainstormOpen(true)}
-          className="text-xs"
-        >
-          <Users className="w-3 h-3 mr-1" />
-          Start virtual call with stakeholders
-        </Button>
       </div>
 
       {/* 4. Plan Section - Only show for tasks */}
@@ -479,7 +481,7 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
               className="text-xs"
             >
               <FileText className="w-3 h-3 mr-1" />
-              Get feedback
+              Get virtual feedback on plan
             </Button>
           </div>
           <div className="border border-gray-200 rounded-lg overflow-hidden">
