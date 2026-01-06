@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { format } from "date-fns";
+import { Check } from "lucide-react";
 
 interface Meeting {
   id: string;
@@ -37,9 +39,23 @@ interface CalendarViewProps {
 
 const CalendarView = ({ column, onItemClick }: CalendarViewProps) => {
   const today = new Date();
+  const [completedMeetings, setCompletedMeetings] = useState<Set<string>>(new Set());
 
   const handleMeetingClick = (meeting: Meeting) => {
     onItemClick(meeting.id, "meeting");
+  };
+
+  const handleCheckboxChange = (e: React.MouseEvent, meetingId: string) => {
+    e.stopPropagation();
+    setCompletedMeetings((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(meetingId)) {
+        newSet.delete(meetingId);
+      } else {
+        newSet.add(meetingId);
+      }
+      return newSet;
+    });
   };
 
   const getMeetingAtSlot = (slot: string): Meeting | undefined => {
@@ -82,19 +98,37 @@ const CalendarView = ({ column, onItemClick }: CalendarViewProps) => {
                 {meeting ? (
                   <button
                     onClick={() => handleMeetingClick(meeting)}
-                    className="w-full text-left rounded-lg border border-gray-200 bg-white shadow-sm p-3 mt-1 hover:shadow-md transition-shadow cursor-pointer"
+                    className="w-full text-left rounded-lg border border-gray-200 bg-white shadow-sm p-3 mt-1 hover:shadow-md transition-shadow cursor-pointer flex items-start gap-3"
                   >
-                    <p className="font-medium text-gray-900 text-sm">
-                      {meeting.title}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {meeting.startTime} - {meeting.endTime}
-                    </p>
-                    {meeting.attendees && meeting.attendees.length > 0 && (
-                      <p className="text-xs text-gray-400 mt-1">
-                        {meeting.attendees.join(", ")}
+                    <div
+                      onClick={(e) => handleCheckboxChange(e, meeting.id)}
+                      className={`mt-0.5 h-4 w-4 shrink-0 rounded-sm border flex items-center justify-center cursor-pointer transition-colors ${
+                        completedMeetings.has(meeting.id)
+                          ? "bg-primary border-primary"
+                          : "border-gray-300 hover:border-gray-400"
+                      }`}
+                    >
+                      {completedMeetings.has(meeting.id) && (
+                        <Check className="h-3 w-3 text-primary-foreground" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`font-medium text-sm ${
+                        completedMeetings.has(meeting.id)
+                          ? "line-through text-gray-400"
+                          : "text-gray-900"
+                      }`}>
+                        {meeting.title}
                       </p>
-                    )}
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {meeting.startTime} - {meeting.endTime}
+                      </p>
+                      {meeting.attendees && meeting.attendees.length > 0 && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          {meeting.attendees.join(", ")}
+                        </p>
+                      )}
+                    </div>
                   </button>
                 ) : (
                   <div className="h-12" />
