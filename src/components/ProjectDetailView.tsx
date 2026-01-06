@@ -9,7 +9,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import StageIndicator from "@/components/StageIndicator";
-import AIAssistanceCard from "@/components/AIAssistanceCard";
+
 import MeetingNotesDropzone from "@/components/MeetingNotesDropzone";
 import ExtractedTasksReview from "@/components/ExtractedTasksReview";
 import { ProjectStage, StageInfo, Stakeholder, ExtractedTask } from "@/types/project";
@@ -393,21 +393,25 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
 
       {/* Stage Indicator - Only show for tasks */}
       {!isMeeting && (
-        <div>
-          <p className="text-sm font-medium text-gray-700 mb-3">Stage</p>
-          <StageIndicator 
-            stages={itemData.stages} 
-            currentStage={itemData.currentStage} 
-          />
-        </div>
+        <StageIndicator 
+          stages={itemData.stages} 
+          currentStage={itemData.currentStage} 
+        />
       )}
 
       {/* Workplan - Only show for tasks */}
       {!isMeeting && (
         <div className="relative">
-          <label className="text-sm font-medium text-gray-700 block mb-2">
-            Workplan
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-sm font-medium text-gray-700">Workplan</label>
+            <button 
+              onClick={() => setWorkplanReviewOpen(!workplanReviewOpen)}
+              className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 transition-colors"
+            >
+              Get feedback
+              <Lightbulb className="w-4 h-4" />
+            </button>
+          </div>
           <textarea
             className="w-full rounded-lg border border-gray-200 p-3 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             rows={4}
@@ -415,17 +419,6 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
             defaultValue={itemData.workplan}
             key={`workplan-${selectedItemId}`}
           />
-          
-          {/* Review Workplan Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setWorkplanReviewOpen(!workplanReviewOpen)}
-            className="mt-2 relative border-blue-300 text-blue-700 hover:bg-blue-100"
-          >
-            Review Workplan
-            <Lightbulb className="absolute -top-1 -right-1 w-4 h-4 text-blue-500" />
-          </Button>
           
           {/* AI Feedback Popup */}
           {workplanReviewOpen && (
@@ -453,12 +446,6 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
         </div>
       )}
 
-      {/* AI Assistance Card */}
-      <AIAssistanceCard 
-        currentStage={itemData.currentStage}
-        onGetAIFeedback={handleGetAIFeedback}
-        onOpenDocReview={handleOpenDocReview}
-      />
 
       {/* Stakeholders */}
       <div>
