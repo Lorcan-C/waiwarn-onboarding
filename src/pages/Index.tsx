@@ -5,6 +5,7 @@ import CheckInModal from "@/components/CheckInModal";
 import CheckOutModal from "@/components/CheckOutModal";
 import UnstuckModal from "@/components/UnstuckModal";
 import OnboardingSetupView from "@/components/OnboardingSetupView";
+import waiwarnLogo from "@/assets/waiwarn-logo.png";
 import {
   Dialog,
   DialogContent,
@@ -32,9 +33,7 @@ const Index = () => {
       <div className="relative z-10 flex flex-col items-center min-h-screen py-8 px-6">
         {/* Header with Logo and Check-in Button */}
         <div className="h-10 flex items-center justify-between w-full max-w-[1120px] mb-8">
-          <div className="text-2xl font-bold tracking-tight text-slate-800">
-            What Am I Working on Right Now <span className="text-blue-600">(WAIWARN)</span>
-          </div>
+          <img src={waiwarnLogo} alt="What Am I Working On Right Now" className="h-10" />
           <div className="flex gap-2">
             <Button
               variant="outline"
