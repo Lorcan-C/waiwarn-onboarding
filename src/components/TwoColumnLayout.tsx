@@ -7,8 +7,6 @@ import POVsView from "@/components/POVsView";
 import { useLayoutStore, ViewType } from "@/store/layoutStore";
 import { ProjectStage } from "@/types/project";
 import { Button } from "@/components/ui/button";
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { cn } from "@/lib/utils";
 
 interface TabButtonProps {
   active: boolean;
@@ -33,10 +31,9 @@ interface ColumnProps {
   column: "left" | "right";
   tabs: { id: ViewType; label: string }[];
   onStuckClick?: () => void;
-  dimmed?: boolean;
 }
 
-const Column = ({ column, tabs, onStuckClick, dimmed = false }: ColumnProps) => {
+const Column = ({ column, tabs, onStuckClick }: ColumnProps) => {
   const { left, right, setActiveView, handleItemClick } = useLayoutStore();
   const columnState = column === "left" ? left : right;
 
@@ -75,11 +72,7 @@ const Column = ({ column, tabs, onStuckClick, dimmed = false }: ColumnProps) => 
   };
 
   return (
-    <div className={cn(
-      "flex flex-col h-full",
-      column === "right" && "shadow-xl bg-white",
-      dimmed && "opacity-50 pointer-events-none transition-opacity duration-300"
-    )}>
+    <div className={`flex flex-col ${column === "left" ? "border-r border-gray-200" : ""}`}>
       {/* Tab Bar */}
       <div className="flex border-b border-gray-200 px-4 justify-between">
         <div className="flex">
@@ -130,29 +123,11 @@ interface TwoColumnLayoutProps {
 }
 
 const TwoColumnLayout = ({ onStuckClick }: TwoColumnLayoutProps) => {
-  const { right } = useLayoutStore();
-  const isDetailFocused = !!right.selectedItemId;
-
   return (
-    <ResizablePanelGroup direction="horizontal" className="flex-1 min-h-0">
-      <ResizablePanel defaultSize={50} minSize={30}>
-        <Column 
-          column="left" 
-          tabs={leftTabs} 
-          dimmed={isDetailFocused}
-        />
-      </ResizablePanel>
-      
-      <ResizableHandle withHandle className="bg-gray-100 hover:bg-blue-100 transition-colors" />
-      
-      <ResizablePanel defaultSize={50} minSize={30}>
-        <Column 
-          column="right" 
-          tabs={rightTabs} 
-          onStuckClick={onStuckClick} 
-        />
-      </ResizablePanel>
-    </ResizablePanelGroup>
+    <div className="grid grid-cols-1 md:grid-cols-2 flex-1 min-h-0">
+      <Column column="left" tabs={leftTabs} />
+      <Column column="right" tabs={rightTabs} onStuckClick={onStuckClick} />
+    </div>
   );
 };
 
