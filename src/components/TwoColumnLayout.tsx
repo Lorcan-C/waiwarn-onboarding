@@ -7,6 +7,7 @@ import POVsView from "@/components/POVsView";
 import { useLayoutStore, ViewType } from "@/store/layoutStore";
 import { ProjectStage } from "@/types/project";
 import { Button } from "@/components/ui/button";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 
 interface TabButtonProps {
   active: boolean;
@@ -72,7 +73,7 @@ const Column = ({ column, tabs, onStuckClick }: ColumnProps) => {
   };
 
   return (
-    <div className={`flex flex-col ${column === "left" ? "border-r border-gray-200" : ""}`}>
+    <div className="flex flex-col h-full">
       {/* Tab Bar */}
       <div className="flex border-b border-gray-200 px-4 justify-between">
         <div className="flex">
@@ -124,10 +125,17 @@ interface TwoColumnLayoutProps {
 
 const TwoColumnLayout = ({ onStuckClick }: TwoColumnLayoutProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 flex-1 min-h-0">
-      <Column column="left" tabs={leftTabs} />
-      <Column column="right" tabs={rightTabs} onStuckClick={onStuckClick} />
-    </div>
+    <ResizablePanelGroup direction="horizontal" className="flex-1 min-h-0">
+      <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
+        <Column column="left" tabs={leftTabs} />
+      </ResizablePanel>
+      
+      <ResizableHandle withHandle />
+      
+      <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
+        <Column column="right" tabs={rightTabs} onStuckClick={onStuckClick} />
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 };
 
