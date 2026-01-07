@@ -11,6 +11,7 @@ import {
 
 import MeetingNotesDropzone from "@/components/MeetingNotesDropzone";
 import ExtractedTasksReview from "@/components/ExtractedTasksReview";
+import FeatureIllustration from "@/components/FeatureIllustration";
 import { ProjectStage, StageInfo, Stakeholder, ExtractedTask } from "@/types/project";
 import { useLayoutStore } from "@/store/layoutStore";
 import { supabase } from "@/integrations/supabase/client";
@@ -701,6 +702,7 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
               creating threaded conversations around specific sections for clearer, more contextual reviews.
             </p>
           </div>
+          <FeatureIllustration type="document-review" />
           <div className="flex justify-end">
             <Button asChild>
               <a href="https://app.wavepitch.ai/app/review" target="_blank" rel="noopener noreferrer">
@@ -729,6 +731,7 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
               stakeholder perspectives, helping you explore ideas from multiple angles before committing to a direction.
             </p>
           </div>
+          <FeatureIllustration type="virtual-call" />
           <div className="flex justify-end">
             <Button asChild>
               <a href="https://app.wavepitch.ai/app/create" target="_blank" rel="noopener noreferrer">
@@ -758,6 +761,7 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
               This helps identify gaps, risks, and opportunities before moving forward with execution.
             </p>
           </div>
+          <FeatureIllustration type="plan-feedback" />
           <div className="flex justify-end">
             <Button asChild>
               <a href="https://app.wavepitch.ai/app/tasks" target="_blank" rel="noopener noreferrer">
