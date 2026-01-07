@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { FileText, MessageSquare, Plus, GripVertical, Trash2, Users } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { FileText, MessageSquare, Plus, GripVertical, Trash2, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -36,8 +36,17 @@ interface PlanItem {
 interface OutputDocument {
   id: string;
   name: string;
+  size: number;
   selected: boolean;
+  status: 'ready' | 'uploading' | 'error';
 }
+
+// Helper to format file size
+const formatFileSize = (bytes: number): string => {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
 
 // Task data for lookup with full details
 const taskData: Record<string, ItemDetail> = {
@@ -215,6 +224,7 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
   const [planItems, setPlanItems] = useState<PlanItem[]>([]);
   const [outputDocs, setOutputDocs] = useState<OutputDocument[]>([]);
   const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
   const { 
@@ -372,12 +382,53 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
 
   // Output document handlers
   const handleAddDocument = () => {
-    const newDoc: OutputDocument = {
-      id: `doc-${Date.now()}`,
-      name: "New Document.docx",
-      selected: false,
-    };
-    setOutputDocs([...outputDocs, newDoc]);
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const validTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    const maxSize = 10 * 1024 * 1024; // 10MB
+
+    Array.from(files).forEach(file => {
+      // Validate file type
+      if (!validTypes.includes(file.type)) {
+        toast({
+          title: "Invalid file type",
+          description: `${file.name} is not supported. Only .docx and .pdf files are allowed.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate file size
+      if (file.size > maxSize) {
+        toast({
+          title: "File too large",
+          description: `${file.name} exceeds the 10MB limit.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Add valid file to document list
+      const newDoc: OutputDocument = {
+        id: `doc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        name: file.name,
+        size: file.size,
+        selected: false,
+        status: 'ready',
+      };
+      setOutputDocs(prev => [...prev, newDoc]);
+    });
+
+    // Reset input so same file can be selected again
+    event.target.value = '';
   };
 
   const handleToggleDocSelection = (id: string) => {
@@ -553,36 +604,54 @@ const ProjectDetailView = ({ column, onItemClick, selectedItemId, selectedItemTy
               Get virtual stakeholders to review document
             </Button>
           </div>
+          
+          {/* Hidden file input */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelected}
+            accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            multiple
+            className="hidden"
+          />
+          
           <div className="border border-gray-200 rounded-lg overflow-hidden">
             <div className="divide-y divide-gray-100">
               {outputDocs.map((doc) => (
                 <div
                   key={doc.id}
-                  className="flex items-center gap-3 p-3 bg-white hover:bg-gray-50 group"
+                  className="flex items-center gap-3 p-3 bg-green-50 border-l-4 border-green-200 hover:bg-green-100 group transition-colors"
                 >
                   <input
                     type="checkbox"
                     checked={doc.selected}
                     onChange={() => handleToggleDocSelection(doc.id)}
-                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                   />
-                  <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                  <span className="flex-1 text-sm text-gray-700">{doc.name}</span>
+                  <FileText className="w-4 h-4 text-green-600 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm text-gray-700 truncate block">{doc.name}</span>
+                    <span className="text-xs text-gray-500">{formatFileSize(doc.size)}</span>
+                  </div>
+                  <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700 rounded-full whitespace-nowrap">
+                    Ready for review
+                  </span>
                   <button
                     onClick={() => handleDeleteDocument(doc.id)}
-                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-opacity"
+                    className="p-1 text-gray-400 hover:text-red-500 transition-colors"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
               ))}
             </div>
             <button
               onClick={handleAddDocument}
-              className="w-full flex items-center gap-2 p-3 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors border-t border-gray-100"
+              className="w-full flex items-center justify-center gap-2 p-3 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors border-t border-gray-100"
             >
               <Plus className="w-4 h-4" />
               Add document
+              <span className="text-xs text-gray-400">(.docx, .pdf)</span>
             </button>
           </div>
         </div>
